@@ -4,9 +4,11 @@ defmodule Reminderson.Reminders do
   """
 
   import Ecto.Query, warn: false
-  alias Reminderson.Repo
 
+  alias Reminderson.Repo
+  alias Reminderson.Reminders.Twitter
   alias Reminderson.Reminders.TweetReminder
+  alias ExTwitter.Model.Tweet, as: RawTweet
 
   @doc """
   Returns the list of reminders_tweet.
@@ -49,7 +51,15 @@ defmodule Reminderson.Reminders do
       {:error, %Ecto.Changeset{}}
 
   """
-  def create_tweet_reminder(attrs \\ %{}) do
+  def create_tweet_reminder(attrs \\ %{})
+
+  def create_tweet_reminder(%RawTweet{} = raw_tweet) do
+    %TweetReminder{}
+    |> TweetReminder.changeset(Twitter.extract_from_raw_tweet(raw_tweet))
+    |> Repo.insert()
+  end
+
+  def create_tweet_reminder(attrs) do
     %TweetReminder{}
     |> TweetReminder.changeset(attrs)
     |> Repo.insert()

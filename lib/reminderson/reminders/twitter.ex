@@ -30,7 +30,7 @@ defmodule Reminderson.Reminders.Twitter do
     |> Repo.update()
   end
 
-  defp extract_from_raw_tweet(%RawTweet{} = reminder) do
+  def extract_from_raw_tweet(%RawTweet{} = reminder) do
     {:ok, datetime, text, tags} = TweetTextParser.parse(reminder.text)
 
     datetime =
