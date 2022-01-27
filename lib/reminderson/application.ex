@@ -16,7 +16,8 @@ defmodule Reminderson.Application do
       {Phoenix.PubSub, name: Reminderson.PubSub},
       # Start the Endpoint (http/https)
       RemindersonWeb.Endpoint,
-      {Oban, Application.fetch_env!(:reminderson, Oban)}
+      {Oban, Application.fetch_env!(:reminderson, Oban)},
+      {Reminderson.Reminders.TwitterMentionsStreamJob, Application.fetch_env!(:extwitter, :oauth)}
       # Start a worker by calling: Reminderson.Worker.start_link(arg)
       # {Reminderson.Worker, arg}
     ]

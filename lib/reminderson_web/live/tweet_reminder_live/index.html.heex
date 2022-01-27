@@ -1,0 +1,55 @@
+<h1>Listing Reminders tweet</h1>
+
+<%= if @live_action in [:new, :edit] do %>
+  <.modal return_to={Routes.tweet_reminder_index_path(@socket, :index)}>
+    <.live_component
+      module={RemindersonWeb.TweetReminderLive.FormComponent}
+      id={@tweet_reminder.id || :new}
+      title={@page_title}
+      action={@live_action}
+      tweet_reminder={@tweet_reminder}
+      return_to={Routes.tweet_reminder_index_path(@socket, :index)}
+    />
+  </.modal>
+<% end %>
+
+<table>
+  <thead>
+    <tr>
+      <th>Reason</th>
+      <th>Ask reminder</th>
+      <th>Acknowledgement</th>
+      <th>Reminder</th>
+      <th>Reason screen name</th>
+      <th>Ask reminder screen name</th>
+      <th>Text</th>
+      <th>Tags</th>
+      <th>Remind at</th>
+
+      <th></th>
+    </tr>
+  </thead>
+  <tbody id="reminders_tweet">
+    <%= for tweet_reminder <- @reminders_tweet do %>
+      <tr id={"tweet_reminder-#{tweet_reminder.id}"}>
+        <td><%= tweet_reminder.reason_id %></td>
+        <td><%= tweet_reminder.ask_reminder_id %></td>
+        <td><%= tweet_reminder.acknowledgement_id %></td>
+        <td><%= tweet_reminder.reminder_id %></td>
+        <td><%= tweet_reminder.reason_screen_name %></td>
+        <td><%= tweet_reminder.ask_reminder_screen_name %></td>
+        <td><%= tweet_reminder.text %></td>
+        <td><%= tweet_reminder.tags %></td>
+        <td><%= tweet_reminder.remind_at %></td>
+
+        <td>
+          <span><%= live_redirect "Show", to: Routes.tweet_reminder_show_path(@socket, :show, tweet_reminder) %></span>
+          <span><%= live_patch "Edit", to: Routes.tweet_reminder_index_path(@socket, :edit, tweet_reminder) %></span>
+          <span><%= link "Delete", to: "#", phx_click: "delete", phx_value_id: tweet_reminder.id, data: [confirm: "Are you sure?"] %></span>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<span><%= live_patch "New Tweet reminder", to: Routes.tweet_reminder_index_path(@socket, :new) %></span>

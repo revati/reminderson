@@ -17,7 +17,13 @@ defmodule RemindersonWeb.Router do
   scope "/", RemindersonWeb do
     pipe_through :browser
 
-    get "/", PageController, :index
+    # get "/", PageController, :index
+    live "/", TweetReminderLive.Index, :index
+    live "/reminders_tweet/new", TweetReminderLive.Index, :new
+    live "/reminders_tweet/:id/edit", TweetReminderLive.Index, :edit
+
+    live "/reminders_tweet/:id", TweetReminderLive.Show, :show
+    live "/reminders_tweet/:id/show/edit", TweetReminderLive.Show, :edit
   end
 
   # Other scopes may use custom stacks.

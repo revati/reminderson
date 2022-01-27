@@ -49,7 +49,12 @@ defmodule Reminderson.MixProject do
       {:gettext, "~> 0.18"},
       {:jason, "~> 1.2"},
       {:plug_cowboy, "~> 2.5"},
-      {:oban, "~> 2.10"}
+      {:oban, "~> 2.10"},
+      {:oauther, "~> 1.3"},
+      {:extwitter, "~> 0.12.4"},
+      {:tzdata, "~> 1.1", override: true},
+      {:timex, "~> 3.7"},
+      {:scrivener_ecto, "~> 2.0"}
     ]
   end
 

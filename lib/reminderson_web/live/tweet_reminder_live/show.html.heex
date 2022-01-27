@@ -1,0 +1,66 @@
+<h1>Show Tweet reminder</h1>
+
+<%= if @live_action in [:edit] do %>
+  <.modal return_to={Routes.tweet_reminder_show_path(@socket, :show, @tweet_reminder)}>
+    <.live_component
+      module={RemindersonWeb.TweetReminderLive.FormComponent}
+      id={@tweet_reminder.id}
+      title={@page_title}
+      action={@live_action}
+      tweet_reminder={@tweet_reminder}
+      return_to={Routes.tweet_reminder_show_path(@socket, :show, @tweet_reminder)}
+    />
+  </.modal>
+<% end %>
+
+<ul>
+
+  <li>
+    <strong>Reason:</strong>
+    <%= @tweet_reminder.reason_id %>
+  </li>
+
+  <li>
+    <strong>Ask reminder:</strong>
+    <%= @tweet_reminder.ask_reminder_id %>
+  </li>
+
+  <li>
+    <strong>Acknowledgement:</strong>
+    <%= @tweet_reminder.acknowledgement_id %>
+  </li>
+
+  <li>
+    <strong>Reminder:</strong>
+    <%= @tweet_reminder.reminder_id %>
+  </li>
+
+  <li>
+    <strong>Reason screen name:</strong>
+    <%= @tweet_reminder.reason_screen_name %>
+  </li>
+
+  <li>
+    <strong>Ask reminder screen name:</strong>
+    <%= @tweet_reminder.ask_reminder_screen_name %>
+  </li>
+
+  <li>
+    <strong>Text:</strong>
+    <%= @tweet_reminder.text %>
+  </li>
+
+  <li>
+    <strong>Tags:</strong>
+    <%= @tweet_reminder.tags %>
+  </li>
+
+  <li>
+    <strong>Remind at:</strong>
+    <%= @tweet_reminder.remind_at %>
+  </li>
+
+</ul>
+
+<span><%= live_patch "Edit", to: Routes.tweet_reminder_show_path(@socket, :edit, @tweet_reminder), class: "button" %></span> |
+<span><%= live_redirect "Back", to: Routes.tweet_reminder_index_path(@socket, :index) %></span>
