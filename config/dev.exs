@@ -2,8 +2,8 @@ import Config
 
 # Configure your database
 config :reminderson, Reminderson.Repo,
-  username: "postgres",
-  password: "postgres",
+  username: "atgadinators",
+  password: "secret",
   hostname: "localhost",
   database: "reminderson_dev",
   show_sensitive_data_on_connection_error: true,

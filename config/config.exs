@@ -11,6 +11,11 @@ config :reminderson,
   ecto_repos: [Reminderson.Repo],
   generators: [binary_id: true]
 
+config :reminderson, Oban,
+  repo: Reminderson.Repo,
+  plugins: [Oban.Plugins.Pruner],
+  queues: [twitter_bot: 1]
+
 # Configures the endpoint
 config :reminderson, RemindersonWeb.Endpoint,
   url: [host: "localhost"],
