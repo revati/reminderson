@@ -17,6 +17,7 @@ defmodule RemindersonWeb.Router do
   scope "/", RemindersonWeb do
     pipe_through :browser
 
+    live "/alert", ComponentsLive.Alert, :index
     # get "/", PageController, :index
     live "/", TweetReminderLive.Index, :index
     live "/reminders_tweet/new", TweetReminderLive.Index, :new

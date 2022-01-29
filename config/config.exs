@@ -11,6 +11,23 @@ config :reminderson,
   ecto_repos: [Reminderson.Repo],
   generators: [binary_id: true]
 
+config :reminderson, Components,
+  components: [
+    # alert: Components.Bootstrap.Alert
+    # accordion: HelloWorldWeb.Bootstrap,
+    # badge: HelloWorldWeb.Bootstrap,
+    # button: Components.Bootstrap.Button,
+    # button_group: {Components.Bootstrap.Button, :group},
+    # button_toolbar: {Components.Bootstrap.Button, :toolbar},
+    # dropdown: Components.Bootstrap.Dropdown,
+    # dropdown_toggle: {Components.Bootstrap.Dropdown, :toggle},
+    # dropdown_menu: {Components.Bootstrap.Dropdown, :menu}
+  ],
+  actions: [
+    do_click: Components.Bootstrap.Actions,
+    do_toggle: Components.Bootstrap.Actions
+  ]
+
 config :reminderson, Oban,
   repo: Reminderson.Repo,
   plugins: [Oban.Plugins.Pruner],

@@ -12,13 +12,12 @@ if System.get_env("PHX_SERVER") && System.get_env("RELEASE_NAME") do
   config :reminderson, RemindersonWeb.Endpoint, server: true
 end
 
-twitter_conf =
-  config :extwitter, :oauth,
-    consumer_key: System.get_env("TWITTER_CONSUMER_KEY"),
-    consumer_secret: System.get_env("TWITTER_CONSUMER_SECRET"),
-    access_token: System.get_env("TWITTER_ACCESS_TOKEN"),
-    access_token_secret: System.get_env("TWITTER_ACCESS_SECRET"),
-    account_to_fallow: System.get_env("TWITTER_ACCOUNT_TO_FALLOW")
+config :extwitter, :oauth,
+  consumer_key: System.get_env("TWITTER_CONSUMER_KEY"),
+  consumer_secret: System.get_env("TWITTER_CONSUMER_SECRET"),
+  access_token: System.get_env("TWITTER_ACCESS_TOKEN"),
+  access_token_secret: System.get_env("TWITTER_ACCESS_SECRET"),
+  account_to_fallow: System.get_env("TWITTER_ACCOUNT_TO_FALLOW")
 
 if config_env() == :prod do
   database_url =
