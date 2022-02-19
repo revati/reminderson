@@ -9,7 +9,7 @@ processes = []
 [env]
 
 [deploy]
-  release_command = "/app/bin/my_app eval Reminderson.Release.migrate"
+  release_command = "/app/bin/reminderson eval Reminderson.Release.migrate"
 
 
 [experimental]
