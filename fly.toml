@@ -2,11 +2,15 @@
 
 app = "atgadinators"
 
-kill_signal = "SIGINT"
+kill_signal = "SIGTERM"
 kill_timeout = 5
 processes = []
 
 [env]
+
+[deploy]
+  release_command = "/app/bin/my_app eval Reminderson.Release.migrate"
+
 
 [experimental]
   allowed_public_ports = []
@@ -14,7 +18,7 @@ processes = []
 
 [[services]]
   http_checks = []
-  internal_port = 8080
+  internal_port = 4000
   processes = ["app"]
   protocol = "tcp"
   script_checks = []
