@@ -1,0 +1,1 @@
+call "%~dp0\reminderson" eval Reminderson.Release.migrate
