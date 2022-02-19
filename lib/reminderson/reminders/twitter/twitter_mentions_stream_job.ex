@@ -34,7 +34,7 @@ defmodule Reminderson.Reminders.TwitterMentionsStreamJob do
       end
     end)
 
-    stream = ExTwitter.stream_filter(track: "@" <> config[:account_to_fallow])
+    stream = ExTwitter.stream_filter(track: "@" <> config[:account_to_fallow], timeout: :infinity)
 
     for tweet <- stream do
       handle_raw_tweet(tweet, config)
@@ -78,10 +78,11 @@ defmodule Reminderson.Reminders.TwitterMentionsStreamJob do
   end
 
   defp handle_raw_tweet(message, _config) do
-    IO.inspect(message)
+    IO.inspect(message, label: :handle_raw_tweet)
   end
 
-  def handle_info(message, _config) do
-    Logger.error("#{__MODULE__} received unexpected message #{message}")
+  def handle_info(message, config) do
+    Logger.warn("#{__MODULE__} received unexpected message #{message}")
+    {:noreply, config}
   end
 end
