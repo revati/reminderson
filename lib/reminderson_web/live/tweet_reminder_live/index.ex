@@ -30,6 +30,7 @@ defmodule RemindersonWeb.TweetReminderLive.Index do
     socket
     |> assign(:page_title, "Listing Reminders tweet")
     |> assign(:tweet_reminder, nil)
+    |> put_flash(:info, "It worked! #{inspect(:rand.uniform(100))}")
   end
 
   @impl true

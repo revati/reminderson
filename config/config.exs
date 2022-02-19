@@ -13,7 +13,7 @@ config :reminderson,
 
 config :reminderson, Components,
   components: [
-    # alert: Components.Bootstrap.Alert
+    alert: Components.Bootstrap.Alert
     # accordion: HelloWorldWeb.Bootstrap,
     # badge: HelloWorldWeb.Bootstrap,
     # button: Components.Bootstrap.Button,
