@@ -22,6 +22,9 @@ defmodule Reminderson.Reminders.TwitterMentionsStreamJob do
         nil ->
           nil
 
+        :ok ->
+          :ok
+
         %TweetReminder{} = reminder ->
           stream = ExTwitter.mentions_timeline(count: 200, since_id: reminder.ask_reminder_id)
 
