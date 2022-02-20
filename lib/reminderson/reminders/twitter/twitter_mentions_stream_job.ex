@@ -26,17 +26,22 @@ defmodule Reminderson.Reminders.TwitterMentionsStreamJob do
           :ok
 
         %TweetReminder{} = reminder ->
-          stream = ExTwitter.mentions_timeline(count: 200, since_id: reminder.ask_reminder_id)
+          timeline =
+            ExTwitter.mentions_timeline(count: 200, since_id: reminder.ask_reminder_id)
+            |> IO.inspect(label: :timeline)
 
-          for tweet <- stream do
+          for tweet <- timeline do
             handle_raw_tweet(tweet, config)
           end
       end
     end)
 
-    stream = ExTwitter.stream_filter(track: "@" <> config[:account_to_fallow], timeout: :infinity)
+    stream =
+      ExTwitter.stream_filter(track: "@" <> config[:account_to_fallow], timeout: :infinity)
+      |> IO.inspect(label: :stream)
 
     for tweet <- stream do
+      IO.inspect(tweet, label: :from_stream)
       handle_raw_tweet(tweet, config)
     end
 

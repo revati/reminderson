@@ -11,7 +11,6 @@ processes = []
 [deploy]
   release_command = "/app/bin/reminderson eval Reminderson.Release.migrate"
 
-
 [experimental]
   allowed_public_ports = []
   auto_rollback = true
