@@ -51,7 +51,7 @@ if config_env() == :prod do
     System.get_env("FLY_APP_NAME") ||
       raise "FLY_APP_NAME not available"
 
-  host = System.get_env("PHX_HOST") || "#{app_name}.fly.dev" |> IO.inspect(label: :fsgd)
+  host = System.get_env("PHX_HOST") || "#{app_name}.fly.dev"
   port = String.to_integer(System.get_env("PORT") || "4000")
 
   config :reminderson, RemindersonWeb.Endpoint,

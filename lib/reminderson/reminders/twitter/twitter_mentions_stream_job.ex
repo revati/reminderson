@@ -22,13 +22,10 @@ defmodule Reminderson.Reminders.TwitterMentionsStreamJob do
         nil ->
           nil
 
-        :ok ->
-          :ok
-
         %TweetReminder{} = reminder ->
           timeline =
-            ExTwitter.mentions_timeline(count: 200, since_id: reminder.ask_reminder_id)
-            |> IO.inspect(label: :timeline)
+            [count: 200, since_id: reminder.ask_reminder_id]
+            |> ExTwitter.mentions_timeline()
 
           for tweet <- timeline do
             handle_raw_tweet(tweet, config)
@@ -37,11 +34,10 @@ defmodule Reminderson.Reminders.TwitterMentionsStreamJob do
     end)
 
     stream =
-      ExTwitter.stream_filter(track: "@" <> config[:account_to_fallow], timeout: :infinity)
-      |> IO.inspect(label: :stream)
+      [track: "@" <> config[:account_to_fallow]]
+      |> ExTwitter.stream_filter(:infinity)
 
     for tweet <- stream do
-      IO.inspect(tweet, label: :from_stream)
       handle_raw_tweet(tweet, config)
     end
 
