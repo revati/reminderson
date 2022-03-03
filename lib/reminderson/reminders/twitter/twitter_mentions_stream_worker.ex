@@ -1,4 +1,4 @@
-defmodule Reminderson.Reminders.TwitterMentionsStreamJob do
+defmodule Reminderson.Reminders.TwitterMentionsStreamWorker do
   use GenServer
 
   alias Reminderson.Reminders
@@ -47,17 +47,6 @@ defmodule Reminderson.Reminders.TwitterMentionsStreamJob do
   defp handle_raw_tweet(%RawTweet{} = raw_tweet, config) do
     unless config[:account_to_fallow] === raw_tweet.user.screen_name do
       {:ok, tweet} = Reminders.create_tweet_reminder(raw_tweet)
-
-      # TODO: Extract acknowledgement stuff to worker to be async and wouldnt block stream receiving new tweets
-      ack_tweet =
-        tweet
-        |> Twitter.extract_acknowledgement_text()
-        |> ExTwitter.update(
-          in_reply_to_status_id: tweet.ask_reminder_id,
-          quoted_status_id: tweet.reason_id
-        )
-
-      {:ok, _tweet} = Twitter.update_reminder_acknowledgement(tweet, ack_tweet)
     end
   catch
     e ->

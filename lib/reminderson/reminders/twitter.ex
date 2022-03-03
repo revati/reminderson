@@ -1,7 +1,6 @@
 defmodule Reminderson.Reminders.Twitter do
   alias Reminderson.Repo
   alias Reminderson.Reminders.TweetReminder
-  alias Reminderson.Reminders.TweetReminderJob
   alias Reminderson.Reminders.TweetTextParser
   alias ExTwitter.Model.Tweet, as: RawTweet
 
@@ -15,9 +14,7 @@ defmodule Reminderson.Reminders.Twitter do
   end
 
   def update_reminder_acknowledgement(%TweetReminder{} = reminder, %RawTweet{} = raw) do
-    reminder
-    |> update_tweet_reminder(%{acknowledgement_id: raw.id})
-    |> tap(&tap_create_reminder_job/1)
+    update_tweet_reminder(reminder, %{acknowledgement_id: raw.id})
   end
 
   def update_reminder_reminder(%TweetReminder{} = reminder, %RawTweet{} = raw) do
@@ -50,7 +47,8 @@ defmodule Reminderson.Reminders.Twitter do
         if(reminder.in_reply_to_status_id,
           do: reminder.in_reply_to_screen_name,
           else: reminder.user.screen_name
-        )
+        ),
+      reason_text: reminder.text
     }
   end
 
@@ -75,19 +73,5 @@ defmodule Reminderson.Reminders.Twitter do
 
   defp quote_tweet_link(%TweetReminder{} = reminder) do
     "https://twitter.com/#{reminder.reason_screen_name}/status/#{Integer.to_string(reminder.reason_id)}"
-  end
-
-  defp tap_create_reminder_job({:ok, %TweetReminder{} = reminder}) do
-    if reminder.remind_at do
-      %{id: reminder.id}
-      |> TweetReminderJob.new(scheduled_at: reminder.remind_at)
-      |> Oban.insert()
-    end
-
-    {:ok, reminder}
-  end
-
-  defp tap_create_reminder_job({:error, changeset}) do
-    {:error, changeset}
   end
 end

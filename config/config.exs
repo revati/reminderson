@@ -30,7 +30,11 @@ config :reminderson, Components,
 
 config :reminderson, Oban,
   repo: Reminderson.Repo,
-  plugins: [Oban.Plugins.Pruner],
+  plugins: [
+    Oban.Plugins.Stager,
+    # Oban.Plugins.Repeater,
+    {Oban.Plugins.Pruner, max_age: 300}
+  ],
   queues: [twitter_bot: 1]
 
 # Configures the endpoint

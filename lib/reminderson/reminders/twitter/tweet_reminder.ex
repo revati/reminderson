@@ -14,6 +14,7 @@ defmodule Reminderson.Reminders.TweetReminder do
     field :reminder_id, :integer
     field :tags, {:array, :string}
     field :text, :string
+    field :reason_text, :string
 
     timestamps()
   end
@@ -29,6 +30,7 @@ defmodule Reminderson.Reminders.TweetReminder do
       :reason_screen_name,
       :ask_reminder_screen_name,
       :text,
+      :reason_text,
       :tags,
       :remind_at
     ])
@@ -36,7 +38,8 @@ defmodule Reminderson.Reminders.TweetReminder do
       :reason_id,
       :reason_screen_name,
       :ask_reminder_id,
-      :ask_reminder_screen_name
+      :ask_reminder_screen_name,
+      :reason_text
     ])
     |> unique_constraint(:ask_reminder_id)
     |> unique_constraint(:acknowledgement_id)
