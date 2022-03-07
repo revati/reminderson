@@ -6,10 +6,7 @@ defmodule Reminderson.Reminders do
   import Ecto.Query, warn: false
 
   alias Reminderson.Repo
-  alias Reminderson.Reminders.Twitter
   alias Reminderson.Reminders.TweetReminder
-  alias Reminderson.Reminders.TweetReminderJob
-  alias ExTwitter.Model.Tweet, as: RawTweet
 
   @doc """
   Returns the list of reminders_tweet.
@@ -54,23 +51,11 @@ defmodule Reminderson.Reminders do
   """
   def create_tweet_reminder(attrs \\ %{})
 
-  def create_tweet_reminder(%RawTweet{} = raw_tweet) do
-    payload =
-      raw_tweet
-      |> Twitter.extract_from_raw_tweet()
-      |> Map.put(:reason_text, extract_reason_text(raw_tweet))
-
+  def create_tweet_reminder(attrs) do
     %TweetReminder{}
-    |> TweetReminder.changeset(payload)
+    |> TweetReminder.changeset(attrs)
     |> Repo.insert()
-    |> tap(&tap_create_reminder_job/1)
   end
-
-  # def create_tweet_reminder(attrs) do
-  #   %TweetReminder{}
-  #   |> TweetReminder.changeset(attrs)
-  #   |> Repo.insert()
-  # end
 
   @doc """
   Updates a tweet_reminder.
@@ -88,7 +73,6 @@ defmodule Reminderson.Reminders do
     tweet_reminder
     |> TweetReminder.changeset(attrs)
     |> Repo.update()
-    |> tap(&tap_create_reminder_job/1)
   end
 
   @doc """
@@ -118,36 +102,5 @@ defmodule Reminderson.Reminders do
   """
   def change_tweet_reminder(%TweetReminder{} = tweet_reminder, attrs \\ %{}) do
     TweetReminder.changeset(tweet_reminder, attrs)
-  end
-
-  defp tap_create_reminder_job({:ok, %TweetReminder{} = reminder}) do
-    cond do
-      is_nil(reminder.acknowledgement_id) ->
-        %{id: reminder.id}
-        |> TweetReminderJob.new()
-        |> Oban.insert()
-
-      !is_nil(reminder.remind_at) ->
-        %{id: reminder.id}
-        |> TweetReminderJob.new(scheduled_at: reminder.remind_at)
-        |> Oban.insert()
-    end
-  end
-
-  defp tap_create_reminder_job({:error, changeset}) do
-    {:error, changeset}
-  end
-
-  defp extract_reason_text(%RawTweet{in_reply_to_status_id: nil, text: text}) do
-    text
-  end
-
-  defp extract_reason_text(%RawTweet{in_reply_to_status_id: reply_to}) do
-    reply_to
-    |> ExTwitter.show()
-    |> then(fn
-      %{text: text} -> text
-      _ -> "Error fetching reason tweet contents"
-    end)
   end
 end

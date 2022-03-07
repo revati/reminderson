@@ -1,7 +1,6 @@
 defmodule Reminderson.Reminders.TwitterMentionsStreamWorker do
   use GenServer
 
-  alias Reminderson.Reminders
   alias Reminderson.Reminders.Twitter
   alias Reminderson.Reminders.TweetReminder
   alias ExTwitter.Model.Tweet, as: RawTweet
@@ -46,7 +45,7 @@ defmodule Reminderson.Reminders.TwitterMentionsStreamWorker do
 
   defp handle_raw_tweet(%RawTweet{} = raw_tweet, config) do
     unless config[:account_to_fallow] === raw_tweet.user.screen_name do
-      {:ok, tweet} = Reminders.create_tweet_reminder(raw_tweet)
+      {:ok, _tweet} = Twitter.create_reminder(raw_tweet)
     end
   catch
     e ->
