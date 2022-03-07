@@ -31,9 +31,10 @@ config :reminderson, Components,
 config :reminderson, Oban,
   repo: Reminderson.Repo,
   plugins: [
-    Oban.Plugins.Stager,
+    # Oban.Plugins.Stager,
     # Oban.Plugins.Repeater,
-    {Oban.Plugins.Pruner, max_age: 300}
+    {Oban.Plugins.Pruner, max_age: 60 * 60 * 24},
+    {Oban.Plugins.Reindexer, schedule: "@weekly"}
   ],
   queues: [twitter_bot: 1]
 
