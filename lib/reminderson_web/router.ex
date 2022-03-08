@@ -20,11 +20,7 @@ defmodule RemindersonWeb.Router do
     # live "/alert", ComponentsLive.Alert, :index
     # get "/", PageController, :index
     live "/", TweetReminderLive.Index, :index
-    live "/reminders_tweet/new", TweetReminderLive.Index, :new
-    live "/reminders_tweet/:id/edit", TweetReminderLive.Index, :edit
-
-    live "/reminders_tweet/:id", TweetReminderLive.Show, :show
-    live "/reminders_tweet/:id/show/edit", TweetReminderLive.Show, :edit
+    live "/tweet_reminder/:id", TweetReminderLive.Show, :show
   end
 
   # Other scopes may use custom stacks.

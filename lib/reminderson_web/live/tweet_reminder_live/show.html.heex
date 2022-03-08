@@ -1,18 +1,5 @@
 <h1>Show Tweet reminder</h1>
 
-<%= if @live_action in [:edit] do %>
-  <.modal return_to={Routes.tweet_reminder_show_path(@socket, :show, @tweet_reminder)}>
-    <.live_component
-      module={RemindersonWeb.TweetReminderLive.FormComponent}
-      id={@tweet_reminder.id}
-      title={@page_title}
-      action={@live_action}
-      tweet_reminder={@tweet_reminder}
-      return_to={Routes.tweet_reminder_show_path(@socket, :show, @tweet_reminder)}
-    />
-  </.modal>
-<% end %>
-
 <ul>
 
   <li>
@@ -62,5 +49,4 @@
 
 </ul>
 
-<span><%= live_patch "Edit", to: Routes.tweet_reminder_show_path(@socket, :edit, @tweet_reminder), class: "button" %></span> |
 <span><%= live_redirect "Back", to: Routes.tweet_reminder_index_path(@socket, :index) %></span>
