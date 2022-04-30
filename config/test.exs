@@ -6,10 +6,18 @@ import Config
 # to provide built-in test partitioning in CI environment.
 # Run `mix help test` for more information.
 config :reminderson, Reminderson.Repo,
-  username: "postgres",
-  password: "postgres",
+  username: "atgadinators",
+  password: "secret",
   hostname: "localhost",
   database: "reminderson_test#{System.get_env("MIX_TEST_PARTITION")}",
+  pool: Ecto.Adapters.SQL.Sandbox,
+  pool_size: 10
+
+config :reminderson, Infrastructure.EventStore,
+  username: "atgadinators",
+  password: "secret",
+  hostname: "localhost",
+  database: "reminderson_es_test#{System.get_env("MIX_TEST_PARTITION")}",
   pool: Ecto.Adapters.SQL.Sandbox,
   pool_size: 10
 

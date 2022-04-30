@@ -10,6 +10,7 @@ defmodule Reminderson.Application do
     children = [
       # Start the Ecto repository
       Reminderson.Repo,
+      Infrastructure.Commanded,
       # Start the Telemetry supervisor
       RemindersonWeb.Telemetry,
       # Start the PubSub system
@@ -18,7 +19,9 @@ defmodule Reminderson.Application do
       RemindersonWeb.Endpoint,
       {Oban, Application.fetch_env!(:reminderson, Oban)},
       {Reminderson.Reminders.TwitterMentionsStreamWorker,
-       Application.fetch_env!(:extwitter, :oauth)}
+       Application.fetch_env!(:extwitter, :oauth)},
+      Reminder.EventListener
+
       # Start a worker by calling: Reminderson.Worker.start_link(arg)
       # {Reminderson.Worker, arg}
     ]

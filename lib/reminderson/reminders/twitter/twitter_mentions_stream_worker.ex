@@ -3,6 +3,7 @@ defmodule Reminderson.Reminders.TwitterMentionsStreamWorker do
 
   alias Reminderson.Reminders.Twitter
   alias Reminderson.Reminders.TweetReminder
+  alias Reminderson.Reminders.TweetTextParser
   alias ExTwitter.Model.Tweet, as: RawTweet
   require Logger
 
@@ -17,19 +18,19 @@ defmodule Reminderson.Reminders.TwitterMentionsStreamWorker do
   def handle_continue(:subscribe_to_stream, config) do
     # TODO: Extract to seperate process or smth
     spawn(fn ->
-      case Twitter.get_last_reminder() do
+      Twitter.get_last_reminder()
+      |> case do
         nil ->
-          nil
+          [count: 200]
 
         %TweetReminder{} = reminder ->
-          timeline =
-            [count: 200, since_id: reminder.ask_reminder_id]
-            |> ExTwitter.mentions_timeline()
-
-          for tweet <- timeline do
-            handle_raw_tweet(tweet, config)
-          end
+          [count: 200, since_id: reminder.ask_reminder_id]
       end
+      |> then(fn timeline ->
+        for tweet <- ExTwitter.mentions_timeline(timeline) do
+          handle_raw_tweet(tweet, config)
+        end
+      end)
     end)
 
     stream =
@@ -45,7 +46,9 @@ defmodule Reminderson.Reminders.TwitterMentionsStreamWorker do
 
   defp handle_raw_tweet(%RawTweet{} = raw_tweet, config) do
     unless config[:account_to_fallow] === raw_tweet.user.screen_name do
-      {:ok, _tweet} = Twitter.create_reminder(raw_tweet)
+      payload = extract_from_raw_tweet(raw_tweet) |> IO.inspect()
+
+      :ok = Reminderson.dispatch(Reminder.Record, payload, %{system: true})
     end
   catch
     e ->
@@ -73,5 +76,39 @@ defmodule Reminderson.Reminders.TwitterMentionsStreamWorker do
   def handle_info(message, config) do
     Logger.warn("#{__MODULE__} received unexpected message #{message}")
     {:noreply, config}
+  end
+
+  defp extract_from_raw_tweet(%RawTweet{} = reminder) do
+    {:ok, datetime, text, tags} = TweetTextParser.parse(reminder.text)
+
+    datetime =
+      if is_nil(datetime),
+        do: nil,
+        else: datetime |> Timex.Timezone.convert("Etc/UTC") |> DateTime.to_naive()
+
+    %{
+      type: :tweet,
+      text: text,
+      reason_text: extract_reason_text(reminder),
+      tags: tags,
+      remind_at: datetime,
+      ask_reminder_id: reminder.id,
+      ask_reminder_screen_name: reminder.user.screen_name,
+      reason_id: reminder.in_reply_to_status_id,
+      reason_screen_name: reminder.in_reply_to_screen_name
+    }
+  end
+
+  defp extract_reason_text(%RawTweet{in_reply_to_status_id: nil, text: text}) do
+    text
+  end
+
+  defp extract_reason_text(%RawTweet{in_reply_to_status_id: reply_to}) do
+    reply_to
+    |> ExTwitter.show()
+    |> then(fn
+      %{text: text} -> text
+      _ -> "Error fetching reason tweet contents"
+    end)
   end
 end

@@ -15,10 +15,7 @@ defmodule Reminderson.Reminders.Twitter do
   end
 
   def create_reminder(%RawTweet{} = raw_tweet) do
-    payload =
-      raw_tweet
-      |> extract_from_raw_tweet()
-      |> Map.put(:reason_text, extract_reason_text(raw_tweet))
+    payload = extract_from_raw_tweet(raw_tweet)
 
     %TweetReminder{}
     |> TweetReminder.changeset(payload)
@@ -52,6 +49,7 @@ defmodule Reminderson.Reminders.Twitter do
     %{
       type: :tweet,
       text: text,
+      reason_text: extract_reason_text(reminder),
       tags: tags,
       remind_at: datetime,
       ask_reminder_id: reminder.id,
@@ -61,8 +59,7 @@ defmodule Reminderson.Reminders.Twitter do
         if(reminder.in_reply_to_status_id,
           do: reminder.in_reply_to_screen_name,
           else: reminder.user.screen_name
-        ),
-      reason_text: reminder.text
+        )
     }
   end
 

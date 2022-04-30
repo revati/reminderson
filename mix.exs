@@ -54,7 +54,10 @@ defmodule Reminderson.MixProject do
       {:extwitter, "~> 0.12.4"},
       {:tzdata, "~> 1.1", override: true},
       {:timex, "~> 3.7"},
-      {:scrivener_ecto, "~> 2.0"}
+      {:scrivener_ecto, "~> 2.0"},
+      {:commanded, "~> 1.3"},
+      {:commanded_eventstore_adapter, "~> 1.2"},
+      {:commanded_ecto_projections, "~> 1.2"}
     ]
   end
 
@@ -69,6 +72,9 @@ defmodule Reminderson.MixProject do
       setup: ["deps.get", "ecto.setup"],
       "ecto.setup": ["ecto.create", "ecto.migrate", "run priv/repo/seeds.exs"],
       "ecto.reset": ["ecto.drop", "ecto.setup"],
+      "es.setup": ["event_store.create", "event_store.init", "event_store.migrate"],
+      "es.reset": ["event_store.drop", "es.setup"],
+      "reset": ["es.reset", "ecto.reset"],
       test: ["ecto.create --quiet", "ecto.migrate --quiet", "test"],
       "assets.deploy": ["esbuild default --minify", "phx.digest"]
     ]

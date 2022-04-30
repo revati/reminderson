@@ -9,7 +9,8 @@ import Config
 
 config :reminderson,
   ecto_repos: [Reminderson.Repo],
-  generators: [binary_id: true]
+  generators: [binary_id: true],
+  event_stores: [Infrastructure.EventStore]
 
 config :reminderson, Components,
   components: [

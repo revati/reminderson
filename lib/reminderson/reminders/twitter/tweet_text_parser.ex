@@ -25,6 +25,10 @@ defmodule Reminderson.Reminders.TweetTextParser do
      ~r/pec ((?<period_length>\d+) )?(?<period_type>(dienas|dienam|diena|nedelas|nedelam|nedela|menesis|menesa|menesiem|gads|gada|gadiem))/}
   ]
 
+  def parse(text) when text in [nil, ""] do
+    {:ok, nil, "", []}
+  end
+
   def parse(text) do
     text = normalize_text(text)
     now = DateTime.now!(@timezone)
@@ -46,8 +50,9 @@ defmodule Reminderson.Reminders.TweetTextParser do
         {reminder_text, tags} = prepare_reminder_text(text)
         {:ok, nil, reminder_text, tags}
 
-      response ->
-        response
+      {:ok, datetime, reminder_text, tags} ->
+        datetime = datetime |> Timex.Timezone.convert("Etc/UTC") |> DateTime.to_naive()
+        {:ok, datetime, reminder_text, tags}
     end)
   end
 
@@ -104,7 +109,7 @@ defmodule Reminderson.Reminders.TweetTextParser do
 
   defp normalize_parts(parts) do
     parts
-    |> Enum.reject(fn {k, v} -> v in ["", nil] end)
+    |> Enum.reject(fn {_k, v} -> v in ["", nil] end)
     |> Enum.into(%{}, fn {key, value} ->
       {String.to_existing_atom(key), normalize_single_part(key, value)}
     end)
@@ -140,9 +145,15 @@ defmodule Reminderson.Reminders.TweetTextParser do
     :years
   end
 
+  # defp normalize_text(text) do
+  # end
+
   defp normalize_text(text) do
+    IO.inspect(text, label: :before)
+
     Enum.reduce(@characters, text, fn {from, to}, text ->
       String.replace(text, from, to)
     end)
+    |> tap(&IO.inspect/1)
   end
 end

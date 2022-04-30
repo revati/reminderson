@@ -22,8 +22,6 @@ defmodule Reminderson.Reminders.TweetReminderJob do
         {:ok, _tweet} = Twitter.update_reminder_acknowledgement(tweet, ack_tweet)
 
       is_nil(tweet.reminder_id) ->
-        text = tweet
-
         reminder_tweet =
           tweet
           |> Twitter.extract_reminder_text()
