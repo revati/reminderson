@@ -1,4 +1,4 @@
-defmodule Reminder.Record do
+defmodule Reminder.RecordTweet do
   use Infrastructure.Command
 
   mex_embedded_schema do

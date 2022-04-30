@@ -1,9 +1,8 @@
 defmodule Reminderson.Reminders.TwitterMentionsStreamWorker do
   use GenServer
 
-  alias Reminderson.Reminders.Twitter
+  alias Reminderson.Reminders.Twitter, as: RTwitter
   alias Reminderson.Reminders.TweetReminder
-  alias Reminderson.Reminders.TweetTextParser
   alias ExTwitter.Model.Tweet, as: RawTweet
   require Logger
 
@@ -18,13 +17,13 @@ defmodule Reminderson.Reminders.TwitterMentionsStreamWorker do
   def handle_continue(:subscribe_to_stream, config) do
     # TODO: Extract to seperate process or smth
     spawn(fn ->
-      Twitter.get_last_reminder()
+      RTwitter.get_last_reminder()
       |> case do
         nil ->
-          [count: 200]
+          [count: 1]
 
         %TweetReminder{} = reminder ->
-          [count: 200, since_id: reminder.ask_reminder_id]
+          [count: 1, since_id: reminder.ask_reminder_id]
       end
       |> then(fn timeline ->
         for tweet <- ExTwitter.mentions_timeline(timeline) do
@@ -48,7 +47,7 @@ defmodule Reminderson.Reminders.TwitterMentionsStreamWorker do
     unless config[:account_to_fallow] === raw_tweet.user.screen_name do
       payload = extract_from_raw_tweet(raw_tweet) |> IO.inspect()
 
-      :ok = Reminderson.dispatch(Reminder.Record, payload, %{system: true})
+      :ok = Core.dispatch(Reminder.RecordTweet, payload, %{system: true})
     end
   catch
     e ->
@@ -70,7 +69,7 @@ defmodule Reminderson.Reminders.TwitterMentionsStreamWorker do
   end
 
   defp handle_raw_tweet(message, _config) do
-    IO.inspect(message, label: :handle_raw_tweet)
+    IO.puts(message, label: :handle_raw_tweet)
   end
 
   def handle_info(message, config) do
@@ -79,19 +78,19 @@ defmodule Reminderson.Reminders.TwitterMentionsStreamWorker do
   end
 
   defp extract_from_raw_tweet(%RawTweet{} = reminder) do
-    {:ok, datetime, text, tags} = TweetTextParser.parse(reminder.text)
+    # {:ok, datetime, text, tags} = Twitter.parse(reminder.text)
 
-    datetime =
-      if is_nil(datetime),
-        do: nil,
-        else: datetime |> Timex.Timezone.convert("Etc/UTC") |> DateTime.to_naive()
+    # datetime =
+    #   if is_nil(datetime),
+    #     do: nil,
+    #     else: datetime |> Timex.Timezone.convert("Etc/UTC") |> DateTime.to_naive()
 
     %{
-      type: :tweet,
-      text: text,
+      # type: :tweet,
+      text: reminder.text,
       reason_text: extract_reason_text(reminder),
-      tags: tags,
-      remind_at: datetime,
+      # tags: tags,
+      # remind_at: datetime,
       ask_reminder_id: reminder.id,
       ask_reminder_screen_name: reminder.user.screen_name,
       reason_id: reminder.in_reply_to_status_id,

@@ -17,7 +17,7 @@ config :extwitter, :oauth,
   consumer_secret: System.fetch_env!("TWITTER_CONSUMER_SECRET"),
   access_token: System.fetch_env!("TWITTER_ACCESS_TOKEN"),
   access_token_secret: System.fetch_env!("TWITTER_ACCESS_SECRET"),
-  account_to_fallow: System.fetch_env!("TWITTER_ACCOUNT_TO_FALLOW")
+  account_name: String.downcase(System.fetch_env!("TWITTER_ACCOUNT_TO_FALLOW"))
 
 if config_env() == :prod do
   database_url =

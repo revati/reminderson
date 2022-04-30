@@ -1,4 +1,4 @@
-defmodule Reminder.ReasonTextStored do
+defmodule Reminder.ReasonTextFetched do
   use Infrastructure.Schema
 
   mex_embedded_schema do

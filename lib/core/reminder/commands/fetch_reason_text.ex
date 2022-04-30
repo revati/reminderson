@@ -1,4 +1,4 @@
-defmodule Reminder.StoreReasonText do
+defmodule Reminder.FetchReasonText do
   use Infrastructure.Command
 
   mex_embedded_schema do
@@ -6,7 +6,5 @@ defmodule Reminder.StoreReasonText do
       primary_key: true,
       validation: :required
     )
-
-    mex_field(:reason_text, :string)
   end
 end

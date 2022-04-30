@@ -1,4 +1,6 @@
 defmodule EnumHelpers do
+  use Boundary, deps: [], exports: []
+
   def key_type(map) when map_size(map) === 0, do: :atom
 
   def key_type(map) do

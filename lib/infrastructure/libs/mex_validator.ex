@@ -1,4 +1,6 @@
 defmodule MexValidator do
+  use Boundary, deps: [Ecto.Changeset], exports: []
+
   import Ecto.Changeset
 
   defstruct cast: [],

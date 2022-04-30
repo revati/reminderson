@@ -1,11 +1,12 @@
 defmodule Infrastructure.Router do
+  use Boundary, top_level?: true, deps: [Reminder, CRUD]
+
   @moduledoc false
 
   use Commanded.Commands.Router
 
-  dispatch [Reminder.Record, Reminder.StoreReasonText], to: Reminder, identity: :id
+  dispatch [Reminder.RecordTweet, Reminder.FetchReasonText], to: Reminder.Aggregate, identity: :id
 
   identify CRUD.Aggregate, by: :id, prefix: "crud-"
-  dispatch CRUD.UpdateEntity, to: CRUD.Aggregate
-  dispatch CRUD.RemoveEntity, to: CRUD.Aggregate
+  dispatch [CRUD.UpdateEntity, CRUD.RemoveEntity], to: CRUD.Aggregate
 end

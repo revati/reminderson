@@ -1,4 +1,6 @@
 defmodule ChangesetHelpers do
+  use Boundary, deps: [Ecto.Changeset], exports: []
+
   alias Ecto.Changeset
 
   def unify_changesets(one, two) do

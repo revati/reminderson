@@ -2,22 +2,21 @@ defmodule Reminder.ReasonTextFetcherJob do
   use Oban.Worker, queue: :twitter_bot
 
   @impl Oban.Worker
-  def perform(%Oban.Job{args: %{"id" => id, "reason_id" => reason_id} = _args} = job) do
+  def perform(%Oban.Job{args: %{"id" => id} = _args} = job) do
     meta = %{system: true}
 
-    reason_id
-    |> ExTwitter.show()
-    |> then(fn
-      %{text: text} ->
-        text
+    Reminder.FetchReasonText
+    |> Core.dispatch(%{id: id}, meta)
+    |> case do
+      :ok ->
+        :ok
 
       error ->
         if job.attempt < job.max_attempts do
-          raise error
+          error
         else
-          "Error fetching reason tweet text"
+          :ok
         end
-    end)
-    |> then(&Reminderson.dispatch(Reminder.StoreReasonText, %{id: id, reason_text: &1}, meta))
+    end
   end
 end

@@ -1,4 +1,6 @@
 defmodule Reminderson do
+  use Boundary, deps: [Core], exports: [Reminders, Reminders.TweetReminder]
+
   @moduledoc """
   Reminderson keeps the contexts that define your domain
   and business logic.
@@ -6,7 +8,4 @@ defmodule Reminderson do
   Contexts are also responsible for managing your data, regardless
   if it comes from the database, an external API or others.
   """
-
-  defdelegate dispatch(action, params, session, options \\ []), to: Infrastructure.Dispatcher
-  defdelegate validate(action, params, session, options \\ []), to: Infrastructure.Dispatcher
 end

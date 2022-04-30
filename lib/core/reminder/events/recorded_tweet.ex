@@ -1,4 +1,4 @@
-defmodule Reminder.Recorded do
+defmodule Reminder.TweetRecorded do
   use Infrastructure.Schema
 
   mex_embedded_schema do
@@ -11,5 +11,6 @@ defmodule Reminder.Recorded do
     mex_field(:ask_reminder_screen_name, :string)
     mex_field(:reason_id, :integer)
     mex_field(:reason_screen_name, :string)
+    mex_field(:reason_text, :string)
   end
 end

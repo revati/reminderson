@@ -1,4 +1,6 @@
 defmodule Components do
+  use Boundary, deps: [], exports: []
+
   :reminderson
   |> Application.compile_env!([__MODULE__, :components])
   |> Enum.each(fn

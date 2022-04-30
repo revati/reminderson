@@ -2,9 +2,17 @@ defmodule Infrastructure.EventSerializer do
   def serialize(term) when is_struct(term) do
     :dump
     |> term.__struct__.__schema__()
-    |> Enum.reduce(%{}, fn {field, {_, type}}, acc ->
+    |> Enum.reduce(%{}, fn {field, {field, type}}, acc ->
       case Ecto.Type.dump(type, Map.get(term, field)) do
-        {:ok, value} -> Map.put(acc, field, value)
+        {:ok, value} ->
+          Map.put(acc, field, value)
+
+        :error ->
+          IO.puts(
+            "Wrong data passed to #{term.__struct__}.#{field}. Expected #{type}, got: #{Map.get(term, field)}"
+          )
+
+          throw(:error)
       end
     end)
     |> Jason.encode!()
@@ -22,10 +30,18 @@ defmodule Infrastructure.EventSerializer do
     params =
       :dump
       |> model.__schema__()
-      |> Enum.reduce(%{}, fn {field, {_, type}}, acc ->
+      |> Enum.reduce(%{}, fn {field, {field, type}}, acc ->
         # TODOL Should use load instead of cast
         case Ecto.Type.cast(type, Map.get(fields, field)) do
-          {:ok, value} -> Map.put(acc, field, value)
+          {:ok, value} ->
+            Map.put(acc, field, value)
+
+          :error ->
+            IO.puts(
+              "Wrong data passed to #{model}.#{field}. Expected #{type}, got: #{Map.get(fields, field)}"
+            )
+
+            throw(:error)
         end
       end)
 

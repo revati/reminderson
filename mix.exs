@@ -7,7 +7,7 @@ defmodule Reminderson.MixProject do
       version: "0.1.0",
       elixir: "~> 1.12",
       elixirc_paths: elixirc_paths(Mix.env()),
-      compilers: [:gettext] ++ Mix.compilers(),
+      compilers: [:boundary, :gettext] ++ Mix.compilers(),
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
       deps: deps()
@@ -57,7 +57,8 @@ defmodule Reminderson.MixProject do
       {:scrivener_ecto, "~> 2.0"},
       {:commanded, "~> 1.3"},
       {:commanded_eventstore_adapter, "~> 1.2"},
-      {:commanded_ecto_projections, "~> 1.2"}
+      {:commanded_ecto_projections, "~> 1.2"},
+      {:boundary, "~> 0.9", runtime: false}
     ]
   end
 
@@ -74,7 +75,7 @@ defmodule Reminderson.MixProject do
       "ecto.reset": ["ecto.drop", "ecto.setup"],
       "es.setup": ["event_store.create", "event_store.init", "event_store.migrate"],
       "es.reset": ["event_store.drop", "es.setup"],
-      "reset": ["es.reset", "ecto.reset"],
+      reset: ["es.reset", "ecto.reset"],
       test: ["ecto.create --quiet", "ecto.migrate --quiet", "test"],
       "assets.deploy": ["esbuild default --minify", "phx.digest"]
     ]

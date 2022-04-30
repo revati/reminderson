@@ -18,8 +18,7 @@ defmodule Reminderson.Application do
       # Start the Endpoint (http/https)
       RemindersonWeb.Endpoint,
       {Oban, Application.fetch_env!(:reminderson, Oban)},
-      {Reminderson.Reminders.TwitterMentionsStreamWorker,
-       Application.fetch_env!(:extwitter, :oauth)},
+      Reminder.TwitterSubscriber,
       Reminder.EventListener
 
       # Start a worker by calling: Reminderson.Worker.start_link(arg)

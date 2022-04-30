@@ -1,4 +1,6 @@
 defmodule Mex do
+  use Boundary, deps: [], exports: []
+
   defmacro __using__(_) do
     quote do
       use Ecto.Schema
@@ -85,6 +87,7 @@ defmodule Mex do
 
   defp save_metadata(name, opts) do
     opts = Macro.escape(opts)
+
     quote do
       cond do
         @save_fields_options === :unsafe_save_all ->

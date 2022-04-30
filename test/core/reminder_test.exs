@@ -10,6 +10,6 @@ defmodule ReminderTest do
       text: "sd"
     }
 
-    assert :ok = Reminderson.dispatch(Reminder.Record, params, %{})
+    assert :ok = Reminderson.dispatch(Reminder.RecordTweet, params, %{})
   end
 end
