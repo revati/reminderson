@@ -2,7 +2,7 @@ defmodule Reminderson.Reminders.Twitter do
   alias Reminderson.Repo
   alias Reminderson.Reminders.TweetReminder
   alias Reminderson.Reminders.TweetTextParser
-  alias Reminderson.Reminders.TweetReminderJob
+  # alias Reminderson.Reminders.TweetReminderJob
   alias ExTwitter.Model.Tweet, as: RawTweet
 
   import Ecto.Query
@@ -63,41 +63,18 @@ defmodule Reminderson.Reminders.Twitter do
     }
   end
 
-  def extract_acknowledgement_text(%TweetReminder{remind_at: nil} = reminder) do
-    tweet_link = quote_tweet_link(reminder)
+  defp tap_create_reminder_job({:ok, %TweetReminder{} = _reminder}) do
+    # cond do
+    # is_nil(reminder.acknowledgement_id) ->
+    #   %{id: reminder.id}
+    #   |> TweetReminderJob.new()
+    #   |> Oban.insert()
 
-    "@#{reminder.ask_reminder_screen_name} pieglabāšu šo tweetu vēlākam #{tweet_link}. #{reminder.id}"
-  end
-
-  def extract_acknowledgement_text(%TweetReminder{} = reminder) do
-    tweet_link = quote_tweet_link(reminder)
-
-    "@#{reminder.ask_reminder_screen_name} atgadinasu tev par šo tweetu #{NaiveDateTime.to_string(reminder.remind_at)} #{tweet_link}. #{reminder.id}"
-  end
-
-  def extract_reminder_text(%TweetReminder{} = reminder) do
-    tags = reminder.tags |> Enum.map(&"##{&1}") |> Enum.join(" ")
-    tweet_link = quote_tweet_link(reminder)
-
-    "@#{reminder.ask_reminder_screen_name} Atgādinu: #{reminder.text} #{tags} #{tweet_link}. #{reminder.id}"
-  end
-
-  defp quote_tweet_link(%TweetReminder{} = reminder) do
-    "https://twitter.com/#{reminder.reason_screen_name}/status/#{Integer.to_string(reminder.reason_id)}"
-  end
-
-  defp tap_create_reminder_job({:ok, %TweetReminder{} = reminder}) do
-    cond do
-      is_nil(reminder.acknowledgement_id) ->
-        %{id: reminder.id}
-        |> TweetReminderJob.new()
-        |> Oban.insert()
-
-      !is_nil(reminder.remind_at) ->
-        %{id: reminder.id}
-        |> TweetReminderJob.new(scheduled_at: reminder.remind_at)
-        |> Oban.insert()
-    end
+    # !is_nil(reminder.remind_at) ->
+    #   %{id: reminder.id}
+    #   |> TweetReminderJob.new(scheduled_at: reminder.remind_at)
+    #   |> Oban.insert()
+    # end
   end
 
   defp tap_create_reminder_job({:error, changeset}) do

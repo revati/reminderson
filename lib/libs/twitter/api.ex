@@ -14,7 +14,7 @@ defmodule Twitter.Api do
   def fetch_latest_mentions(_since_id \\ nil) do
     account = account_to_follow()
 
-    ExTwitter.mentions_timeline(count: 200)
+    ExTwitter.mentions_timeline(count: 5)
     |> Enum.reject(&is_error?/1)
     |> Enum.reject(&is_author?(&1, account))
     |> Enum.map(&normalize/1)
@@ -28,6 +28,17 @@ defmodule Twitter.Api do
     |> Stream.reject(&is_error?/1)
     |> Stream.reject(&is_author?(&1, account))
     |> Stream.map(&normalize/1)
+  end
+
+  def respond_to_tweet(respond_to, text, opts \\ []) do
+    ExTwitter.update(
+      text,
+      in_reply_to_status_id: respond_to,
+      quoted_status_id: opts[:quote]
+    )
+    |> then(&{:ok, normalize(&1)})
+  rescue
+    e in ExTwitter.Error -> {:error, e.message}
   end
 
   defp is_error?(%ExTwitter.Model.Tweet{}), do: false
@@ -57,11 +68,13 @@ defmodule Twitter.Api do
 
   defp normalize(%ExTwitter.Model.Tweet{} = tweet) do
     %{
+      tweet_id: tweet.id,
       text: tweet.text,
       ask_reminder_id: tweet.id,
       ask_reminder_screen_name: tweet.user.screen_name,
       reason_id: tweet.in_reply_to_status_id,
-      reason_screen_name: tweet.in_reply_to_status_id && tweet.in_reply_to_screen_name
+      reason_screen_name: tweet.in_reply_to_status_id && tweet.in_reply_to_screen_name,
+      created_at: Timex.parse!(tweet.created_at, "%a %b %d %H:%M:%S %z %Y", :strftime)
     }
   end
 

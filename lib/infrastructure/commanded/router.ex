@@ -5,7 +5,14 @@ defmodule Infrastructure.Router do
 
   use Commanded.Commands.Router
 
-  dispatch [Reminder.RecordTweet, Reminder.FetchReasonText], to: Reminder.Aggregate, identity: :id
+  dispatch [
+             Reminder.RecordTweet,
+             Reminder.FetchTweetReasonText,
+             Reminder.AcknowledgeTweet,
+             Reminder.RemindAboutTweet
+           ],
+           to: Reminder.Aggregate,
+           identity: :id
 
   identify CRUD.Aggregate, by: :id, prefix: "crud-"
   dispatch [CRUD.UpdateEntity, CRUD.RemoveEntity], to: CRUD.Aggregate

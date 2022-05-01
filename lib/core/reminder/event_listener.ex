@@ -5,10 +5,9 @@ defmodule Reminder.EventListener do
 
   @impl Commanded.Event.Handler
   def handle(%Reminder.TweetRecorded{} = event, _metadata) do
-    {:ok, _job} =
-      %{id: event.id}
-      |> Reminder.ReasonTextFetcherJob.new()
-      |> Oban.insert()
+    {:ok, _job} = Reminder.Jobs.FetchReasonTextJob.initiate(event.id)
+    {:ok, _job} = Reminder.Jobs.AcknowledgeTweetJob.initiate(event.id)
+    {:ok, _job} = Reminder.Jobs.RemindAboutTweetJob.initiate(event.id, event.remind_at)
 
     :ok
   end

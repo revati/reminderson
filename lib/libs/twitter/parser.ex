@@ -3,7 +3,6 @@ defmodule Twitter.Parser do
 
   # @eixsting_atoms [:period_length, :period_type]
   @time Time.new!(9, 0, 0)
-  @timezone "Europe/Riga"
 
   @characters [
     {"ā", "a"},
@@ -25,19 +24,18 @@ defmodule Twitter.Parser do
      ~r/pec ((?<period_length>\d+) )?(?<period_type>(dienas|dienam|diena|nedelas|nedelam|nedela|menesis|menesa|menesiem|gads|gada|gadiem))/}
   ]
 
-  def parse(text) when text in [nil, ""] do
+  def parse(text, _relative_date) when text in [nil, ""] do
     {:ok, nil, "", []}
   end
 
-  def parse(text) do
+  def parse(text, relative_date) do
     text = normalize_text(text)
-    now = DateTime.now!(@timezone)
 
     @parsers
     |> Enum.reduce_while(false, fn {name, regex}, false ->
       case Regex.named_captures(regex, text <> " ") do
         %{} = results ->
-          {:ok, date} = apply(__MODULE__, name, [results, now])
+          {:ok, date} = apply(__MODULE__, name, [results, relative_date])
           {reminder_text, tags} = prepare_reminder_text(regex, text)
           {:halt, {:ok, date, reminder_text, tags}}
 
@@ -51,7 +49,7 @@ defmodule Twitter.Parser do
         {:ok, nil, reminder_text, tags}
 
       {:ok, datetime, reminder_text, tags} ->
-        {:ok, Timex.Timezone.convert(datetime, "Etc/UTC"), reminder_text, tags}
+        {:ok, datetime, reminder_text, tags}
     end)
   end
 
@@ -80,12 +78,12 @@ defmodule Twitter.Parser do
         do: now.year + 1,
         else: now.year
 
-    DateTime.new(Date.new!(year, parts.month, parts.day), @time, @timezone)
+    DateTime.new(Date.new!(year, parts.month, parts.day), @time, now.timezone)
   end
 
-  def exact_date(%{"day" => _, "month" => _, "year" => _} = parts, _now) do
+  def exact_date(%{"day" => _, "month" => _, "year" => _} = parts, now) do
     parts = normalize_parts(parts)
-    DateTime.new(Date.new!(parts.year, parts.month, parts.day), @time, @timezone)
+    DateTime.new(Date.new!(parts.year, parts.month, parts.day), @time, now.timezone)
   end
 
   def diff_date(%{"period_type" => period, "period_length" => ""}, now) do

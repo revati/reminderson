@@ -1,4 +1,4 @@
-defmodule Reminder.FetchTweetReasonText do
+defmodule Reminder.RemindAboutTweet do
   use Infrastructure.Command
 
   mex_embedded_schema do
