@@ -1,4 +1,4 @@
-defmodule Twitter.Parser do
+defmodule Infrastructure.Twitter.Parser do
   require Logger
 
   # @eixsting_atoms [:period_length, :period_type]

@@ -10,11 +10,11 @@ defmodule Reminder.TwitterSubscriber do
   end
 
   def handle_continue(:subscribe_to_stream, nil) do
-    for tweet <- Twitter.fetch_latest_mentions() do
+    for tweet <- Infrastructure.Twitter.fetch_latest_mentions() do
       handle_raw_tweet(tweet)
     end
 
-    for tweet <- Twitter.mentions_stream() do
+    for tweet <- Infrastructure.Twitter.mentions_stream() do
       handle_raw_tweet(tweet)
     end
 
@@ -22,6 +22,6 @@ defmodule Reminder.TwitterSubscriber do
   end
 
   defp handle_raw_tweet(tweet) do
-    :ok = Core.dispatch(Reminder.RecordTweet, tweet, %{system: true})
+    :ok = Infrastructure.dispatch(Reminder.RecordTweet, tweet, %{system: true})
   end
 end

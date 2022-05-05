@@ -15,7 +15,7 @@ defmodule Reminder.Aggregate do
   ]
 
   def execute(%__MODULE__{id: nil}, %Reminder.RecordTweet{} = command) do
-    {:ok, datetime, text, tags} = Twitter.parse(command.text, command.created_at)
+    {:ok, datetime, text, tags} = Infrastructure.Twitter.parse(command.text, command.created_at)
 
     command
     |> Map.from_struct()
@@ -40,7 +40,7 @@ defmodule Reminder.Aggregate do
         :ok
 
       %{reason_id: reason_id} ->
-        case Twitter.get_text_by_id(reason_id) do
+        case Infrastructure.Twitter.get_text_by_id(reason_id) do
           {:ok, text} -> %Reminder.ReasonTextFetched{id: id, reason_text: text}
           {:error, reason} -> {:error, reason}
         end
@@ -54,7 +54,8 @@ defmodule Reminder.Aggregate do
   def execute(%__MODULE__{} = a, %Reminder.AcknowledgeTweet{}) do
     with {:ack, nil} <- {:ack, a.acknowledgement_id},
          text <- Helpers.prepare_acknowledgement_text(a),
-         {:ok, tweet} <- Twitter.respond_to_tweet(a.ask_reminder_id, text, quote: a.reason_id) do
+         {:ok, tweet} <-
+           Infrastructure.Twitter.respond_to_tweet(a.ask_reminder_id, text, quote: a.reason_id) do
       %Reminder.TweetAcknowledged{id: a.id, acknowledgement_id: tweet.tweet_id}
     else
       {:ack, _} -> {:ok, :already_acknowledged}
@@ -70,7 +71,8 @@ defmodule Reminder.Aggregate do
     with {:ack, ack} when not is_nil(ack) <- {:ack, a.acknowledgement_id},
          {:rem, nil} <- {:rem, a.reminder_id},
          text <- Helpers.prepare_reminder_text(a),
-         {:ok, tweet} <- Twitter.respond_to_tweet(a.acknowledgement_id, text, quote: a.reason_id) do
+         {:ok, tweet} <-
+           Infrastructure.Twitter.respond_to_tweet(a.acknowledgement_id, text, quote: a.reason_id) do
       %Reminder.RemindedAboutTweet{id: a.id, reminder_id: tweet.tweet_id}
     else
       {:ack, _} -> {:error, :missing_acknowledgement}

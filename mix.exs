@@ -74,8 +74,8 @@ defmodule Reminderson.MixProject do
       "ecto.setup": ["ecto.create", "ecto.migrate", "run priv/repo/seeds.exs"],
       "ecto.reset": ["ecto.drop", "ecto.setup"],
       "es.setup": ["event_store.create", "event_store.init", "event_store.migrate"],
-      "es.reset": ["event_store.drop", "es.setup"],
-      reset: ["es.reset", "ecto.reset"],
+      # "es.reset": ["event_store.drop", "es.setup"],
+      reset: ["ecto.reset", "es.setup"],
       test: ["ecto.create --quiet", "ecto.migrate --quiet", "test"],
       "assets.deploy": ["esbuild default --minify", "phx.digest"]
     ]

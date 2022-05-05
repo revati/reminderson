@@ -8,7 +8,7 @@
 import Config
 
 config :reminderson,
-  ecto_repos: [Reminderson.Repo],
+  ecto_repos: [Reminderson.Repo, Infrastructure.Repo],
   generators: [binary_id: true],
   event_stores: [Infrastructure.EventStore]
 
@@ -29,8 +29,19 @@ config :reminderson, Components,
     do_toggle: Components.Bootstrap.Actions
   ]
 
-config :reminderson, Oban,
-  repo: Reminderson.Repo,
+# config :reminderson, Oban,
+#   repo: Reminderson.Repo,
+#   plugins: [
+#     # Oban.Plugins.Stager,
+#     # Oban.Plugins.Repeater,
+#     {Oban.Plugins.Pruner, max_age: 60 * 60 * 24},
+#     {Oban.Plugins.Reindexer, schedule: "@weekly"}
+#   ],
+#   queues: []
+
+config :reminderson, Infrastructure.Oban,
+  name: Infrastructure.Oban,
+  repo: Infrastructure.Repo,
   plugins: [
     # Oban.Plugins.Stager,
     # Oban.Plugins.Repeater,

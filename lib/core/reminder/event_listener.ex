@@ -3,12 +3,16 @@ defmodule Reminder.EventListener do
     application: Infrastructure.Commanded,
     name: __MODULE__
 
+  alias Infrastructure.{Oban, Repo}
+  alias Reminder.Jobs.{FetchReasonTextJob, AcknowledgeTweetJob, RemindAboutTweetJob}
   @impl Commanded.Event.Handler
   def handle(%Reminder.TweetRecorded{} = event, _metadata) do
-    {:ok, _job} = Reminder.Jobs.FetchReasonTextJob.initiate(event.id)
-    {:ok, _job} = Reminder.Jobs.AcknowledgeTweetJob.initiate(event.id)
-    {:ok, _job} = Reminder.Jobs.RemindAboutTweetJob.initiate(event.id, event.remind_at)
+    remind_at = event.remind_at
 
-    :ok
+    Ecto.Multi.new()
+    |> Oban.insert(:reason, FetchReasonTextJob.new(%{id: event.id}))
+    |> Oban.insert(:acknowledge, AcknowledgeTweetJob.new(%{id: event.id}))
+    |> Oban.insert(:remind, RemindAboutTweetJob.new(%{id: event.id}, scheduled_at: remind_at))
+    |> Repo.transaction()
   end
 end

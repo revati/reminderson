@@ -1,5 +1,10 @@
 defmodule Reminder do
   use Boundary,
     exports: {:all, except: [Aggregate]},
-    deps: [Core, Twitter, Infrastructure.{Command, Schema}, Mex, MexValidator]
+    deps: [
+      Infrastructure,
+      Infrastructure.{Command, Oban, Repo, Schema, Twitter},
+      Mex,
+      MexValidator
+    ]
 end

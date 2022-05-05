@@ -10,6 +10,7 @@ defmodule Reminderson.Application do
     children = [
       # Start the Ecto repository
       Reminderson.Repo,
+      Infrastructure.Repo,
       Infrastructure.Commanded,
       # Start the Telemetry supervisor
       RemindersonWeb.Telemetry,
@@ -17,7 +18,8 @@ defmodule Reminderson.Application do
       {Phoenix.PubSub, name: Reminderson.PubSub},
       # Start the Endpoint (http/https)
       RemindersonWeb.Endpoint,
-      {Oban, Application.fetch_env!(:reminderson, Oban)},
+      {Oban, Application.fetch_env!(:reminderson, Infrastructure.Oban)},
+      # {Oban, Application.fetch_env!(:reminderson, Oban)},
       Reminder.TwitterSubscriber,
       Reminder.EventListener
 

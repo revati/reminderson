@@ -12,6 +12,6 @@ defmodule Reminder.Jobs.RemindAboutTweetJob do
   end
 
   def perform(%Oban.Job{args: %{"id" => id} = _args}) do
-    :ok = Core.dispatch(Reminder.RemindAboutTweet, %{id: id}, %{system: true})
+    :ok = Infrastructure.dispatch(Reminder.RemindAboutTweet, %{id: id}, %{system: true})
   end
 end

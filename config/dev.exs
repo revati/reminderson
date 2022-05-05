@@ -9,6 +9,15 @@ config :reminderson, Reminderson.Repo,
   show_sensitive_data_on_connection_error: true,
   pool_size: 10
 
+config :reminderson, Infrastructure.Repo,
+  username: "atgadinators",
+  password: "secret",
+  hostname: "localhost",
+  database: "reminderson_es_dev",
+  migration_source: "core_schema_migrations",
+  show_sensitive_data_on_connection_error: true,
+  pool_size: 10
+
 config :reminderson, Infrastructure.EventStore,
   username: "atgadinators",
   password: "secret",

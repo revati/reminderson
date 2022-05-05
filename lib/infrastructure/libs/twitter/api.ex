@@ -1,4 +1,4 @@
-defmodule Twitter.Api do
+defmodule Infrastructure.Twitter.Api do
   def get_text_by_id(id) do
     id
     |> ExTwitter.show()
