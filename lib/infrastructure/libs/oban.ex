@@ -5,6 +5,10 @@ defmodule Infrastructure.Oban do
     Oban.insert(__MODULE__, changeset)
   end
 
+  def insert(multi, :reason = multi_name, changeset) do
+    Oban.insert(__MODULE__, multi, multi_name, changeset)
+  end
+
   def insert(multi, multi_name, changeset) do
     Oban.insert(__MODULE__, multi, multi_name, changeset)
   end

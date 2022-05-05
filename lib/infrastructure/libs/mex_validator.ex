@@ -7,14 +7,20 @@ defmodule MexValidator do
             required: [],
             number: []
 
-  def validate(command, params) when is_atom(command) do
+  def validate(command, params, opts \\ [])
+
+  def validate(command, params, opts) when is_atom(command) do
     command
     |> struct()
-    |> validate(params)
+    |> validate(params, opts)
   end
 
-  def validate(command, params) do
-    ruleset = prepare_ruleset(command.__struct__)
+  def validate(command, params, opts) when is_struct(params) do
+    validate(command, Map.from_struct(params), opts)
+  end
+
+  def validate(command, params, opts) when is_map(params) do
+    ruleset = prepare_ruleset(command.__struct__, opts)
 
     command
     |> cast(params, ruleset.cast)
@@ -46,14 +52,23 @@ defmodule MexValidator do
 
   defp validate_field_rules(%Ecto.Changeset{} = changeset, field, rule, opts) do
     IO.inspect({changeset, field, rule, opts})
+    changeset
     # validate_number(changeset, field, opts)
   end
 
-  defp prepare_ruleset(command) do
-    :meta
-    |> command.__schema__()
+  defp prepare_ruleset(command, opts) do
+    meta = command.__schema__(:meta)
+
+    except = opts[:except] || []
+    only = opts[:only] || Enum.map(meta, &elem(&1, 0))
+
+    meta
     |> Enum.reduce(%__MODULE__{}, fn {field, meta}, ruleset ->
-      apply_rule_field(ruleset, field, Keyword.get(meta, :validation, []))
+      if field not in except and field in only do
+        apply_rule_field(ruleset, field, Keyword.get(meta, :validation, []))
+      else
+        ruleset
+      end
     end)
   end
 
