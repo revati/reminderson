@@ -10,22 +10,22 @@ defmodule Reminder.StrongEventListener do
   end
 
   project %Reminder.TweetAcknowledged{} = event, _metadata, fn multi ->
-    reminder = Infrastructure.Repo.get!(Reminder.Reminder, event.id)
-
-    Ecto.Multi.insert(
+    Ecto.Multi.update(
       multi,
       :acknowledgement,
-      Reminder.Reminder.acknowledgement_changeset(reminder, event)
+      Reminder.Reminder
+      |> Infrastructure.Repo.get!(event.id)
+      |> Reminder.Reminder.acknowledgement_changeset(event)
     )
   end
 
   project %Reminder.RemindedAboutTweet{} = event, _metadata, fn multi ->
-    reminder = Infrastructure.Repo.get!(Reminder.Reminder, event.id)
-
-    Ecto.Multi.insert(
+    Ecto.Multi.update(
       multi,
       :reminded,
-      Reminder.Reminder.reminded_changeset(reminder, event)
+      Reminder.Reminder
+      |> Infrastructure.Repo.get!(event.id)
+      |> Reminder.Reminder.reminded_changeset(event)
     )
   end
 end

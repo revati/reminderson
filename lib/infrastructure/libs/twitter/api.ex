@@ -30,15 +30,41 @@ defmodule Infrastructure.Twitter.Api do
     |> Stream.map(&normalize/1)
   end
 
-  def respond_to_tweet(respond_to, text, opts \\ []) do
-    ExTwitter.update(
-      text,
+  def respond_to_tweet(respond_to, text, _opts \\ []) do
+    # ExTwitter.update(
+    #   text,
+    #   in_reply_to_status_id: respond_to,
+    #   quoted_status_id: opts[:quote]
+    # )
+
+    id = :rand.uniform(8_999_999_999_999_999_999) + 1_000_000_000_000_000_000
+
+    %ExTwitter.Model.Tweet{
+      id: id,
+      text: text,
+      user: %{screen_name: "test"},
       in_reply_to_status_id: respond_to,
-      quoted_status_id: opts[:quote]
-    )
+      in_reply_to_screen_name: "another",
+      created_at: "Wed Sep 14 16:50:47 +0000 2011"
+    }
     |> then(&{:ok, normalize(&1)})
   rescue
-    e in ExTwitter.Error -> {:error, e.message}
+    e in ExTwitter.Error ->
+      {:error, %{type: :error, code: e.code, message: e.message}}
+
+    e in ExTwitter.ConnectionError ->
+      {:error, %{type: :connection, reason: e.reason, message: e.message}}
+
+    e in ExTwitter.RateLimitExceededError ->
+      error = %{
+        type: :limit,
+        code: e.code,
+        message: e.message,
+        reset_in: e.reset_in,
+        reset_at: e.reset_at
+      }
+
+      {:error, error}
   end
 
   defp is_error?(%ExTwitter.Model.Tweet{}), do: false

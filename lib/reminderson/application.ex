@@ -22,7 +22,8 @@ defmodule Reminderson.Application do
       # {Oban, Application.fetch_env!(:reminderson, Oban)},
       Reminder.TwitterSubscriber,
       Reminder.EventListener,
-      Reminder.StrongEventListener
+      Reminder.StrongEventListener,
+      {Mutex, name: Infrastructure.Mutex}
 
       # Start a worker by calling: Reminderson.Worker.start_link(arg)
       # {Reminderson.Worker, arg}

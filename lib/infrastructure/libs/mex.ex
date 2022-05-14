@@ -1,10 +1,13 @@
-defmodule Mex do
-  use Boundary, deps: [], exports: []
+defmodule Infrastructure.Mex do
+  use Boundary,
+    top_level?: true,
+    deps: [Infrastructure.Mutex, Infrastructure.Repo],
+    exports: [Validator]
 
   defmacro __using__(_) do
     quote do
       use Ecto.Schema
-      import Mex, only: [mex_embedded_schema: 1, mex_schema: 2]
+      import Infrastructure.Mex, only: [mex_embedded_schema: 1, mex_schema: 2]
 
       Module.register_attribute(__MODULE__, :fields_meta, accumulate: true)
       Module.put_attribute(__MODULE__, :save_fields_options, [])
@@ -26,7 +29,7 @@ defmodule Mex do
   defp execute_body(block) do
     prelude =
       quote do
-        import Mex, only: [mex_field: 1, mex_field: 2, mex_field: 3]
+        import Infrastructure.Mex, only: [mex_field: 1, mex_field: 2, mex_field: 3]
         unquote(block)
       end
 

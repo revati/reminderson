@@ -58,7 +58,8 @@ defmodule Reminderson.MixProject do
       {:commanded, "~> 1.3"},
       {:commanded_eventstore_adapter, "~> 1.2"},
       {:commanded_ecto_projections, "~> 1.2"},
-      {:boundary, "~> 0.9", runtime: false}
+      {:boundary, "~> 0.9", runtime: false},
+      {:mutex, "~> 1.3.1"}
     ]
   end
 

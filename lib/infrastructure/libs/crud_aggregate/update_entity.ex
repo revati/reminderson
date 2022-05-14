@@ -14,7 +14,7 @@ defmodule CRUD.UpdateEntity do
 
       def changeset(params) do
         {entity_id, entity_fields} = extract_allowed_fields(params)
-        crud_changeset = MexValidator.validate(__MODULE__, entity_fields)
+        crud_changeset = Infrastructure.Mex.Validator.validate(__MODULE__, entity_fields)
 
         params = %{
           entity_id: entity_id,

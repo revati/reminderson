@@ -2,7 +2,6 @@ defmodule Reminderson.Repo.Migrations.ObanJobs do
   use Ecto.Migration
 
   def up do
-    IO.inspect(repo())
     Oban.Migrations.up()
   end
 

@@ -19,6 +19,10 @@ defmodule Infrastructure.Dispatcher.CommandDispatcherMiddleware do
     changeset
     |> Ecto.Changeset.apply_changes()
     |> Infrastructure.Commanded.dispatch(options)
+    |> case do
+      :ok -> {:ok, extract_primary_keys_with_values(changeset)}
+      {:error, error} -> {:error, error}
+    end
   end
 
   defp execute_command_from_changeset(changesets, options) do
@@ -27,8 +31,8 @@ defmodule Infrastructure.Dispatcher.CommandDispatcherMiddleware do
       changeset
       |> execute_command_from_changeset(options)
       |> case do
+        {:ok, response} -> {:cont, Keyword.put(acc, command, response)}
         {:error, reason} -> {:halt, {:error, reason}}
-        response -> {:cont, Keyword.put_new(acc, command, response)}
       end
     end)
   end
@@ -40,5 +44,11 @@ defmodule Infrastructure.Dispatcher.CommandDispatcherMiddleware do
         do: Keyword.put(options, key, apply(command, key, [])),
         else: options
     end)
+  end
+
+  defp extract_primary_keys_with_values(changeset) do
+    :primary_key
+    |> changeset.data.__struct__.__schema__()
+    |> Enum.into(%{}, &{&1, Ecto.Changeset.get_field(changeset, &1)})
   end
 end

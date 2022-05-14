@@ -3,8 +3,6 @@ defmodule Reminder do
     exports: {:all, except: [Aggregate]},
     deps: [
       Infrastructure,
-      Infrastructure.{Command, Oban, Repo, Schema, Twitter},
-      Mex,
-      MexValidator
+      Infrastructure.{Command, Mex, Oban, Repo, Schema, Twitter}
     ]
 end
