@@ -52,15 +52,17 @@ defmodule Reminder.Aggregate do
   end
 
   def execute(%__MODULE__{} = a, %Reminder.AcknowledgeTweet{}) do
-    with {:ack, nil} <- {:ack, a.acknowledgement_id},
-         text <- Helpers.prepare_acknowledgement_text(a),
-         {:ok, tweet} <-
-           Infrastructure.Twitter.respond_to_tweet(a.ask_reminder_id, text, quote: a.reason_id) do
-      %Reminder.TweetAcknowledged{id: a.id, acknowledgement_id: tweet.tweet_id}
-    else
-      {:ack, _} -> {:ok, :already_acknowledged}
-      {:error, reason} -> {:error, reason}
-    end
+    {:error, :not_found}
+
+    # with {:ack, nil} <- {:ack, a.acknowledgement_id},
+    #      text <- Helpers.prepare_acknowledgement_text(a),
+    #      {:ok, tweet} <-
+    #        Infrastructure.Twitter.respond_to_tweet(a.ask_reminder_id, text, quote: a.reason_id) do
+    #   %Reminder.TweetAcknowledged{id: a.id, acknowledgement_id: tweet.tweet_id}
+    # else
+    #   {:ack, _} -> {:ok, :already_acknowledged}
+    #   {:error, reason} -> {:error, reason}
+    # end
   end
 
   def execute(%__MODULE__{id: nil}, %Reminder.RemindAboutTweet{}) do

@@ -1,21 +1,16 @@
 defmodule Infrastructure.Dispatcher.ResponseUnifier do
-  def normalize(:ok), do: :ok
+  def normalize(pipeline) do
+    data =
+      pipeline.commands
+      |> Enum.reverse()
+      |> Enum.reduce([], &[{&1, Keyword.get(pipeline.data, &1) || {:error, :no_response}} | &2])
 
-  def normalize({status, response}) when is_list(response) do
+    all_success? = Enum.all?(data, &match?({_command, {:ok, _response}}, &1))
+
     cond do
-      Enum.all?(response, &match?({_, :ok}, &1)) ->
-        :ok
-
-      Enum.all?(response, &match?({_, %Ecto.Changeset{}}, &1)) ->
-        {status,
-         response
-         |> Enum.map(&elem(&1, 1))
-         |> Enum.reduce(&ChangesetHelpers.unify_changesets/2)}
-
-      true ->
-        {status, response}
+      pipeline.multi? && all_success? -> {:ok, data}
+      pipeline.multi? -> {:error, data}
+      true -> pipeline.data[hd(pipeline.commands)]
     end
   end
-
-  def normalize(all), do: all
 end

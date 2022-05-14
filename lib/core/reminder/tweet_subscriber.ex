@@ -24,22 +24,17 @@ defmodule Reminder.TwitterSubscriber do
   end
 
   defp handle_raw_tweet(tweet) do
-    case Infrastructure.dispatch(Reminder.RecordTweet, tweet, %{system: true}) do
+    case Infrastructure.dispatch([Reminder.RecordTweet, Reminder.AcknowledgeTweet], tweet, %{
+           system: true
+         }) do
       {:ok, response} ->
         Logger.info(response)
         :ok
 
-      {:error, %Ecto.Changeset{} = changeset} ->
-        changeset
-        |> Ecto.Changeset.traverse_errors(fn {msg, opts} ->
-          Regex.replace(~r"%{(\w+)}", msg, fn _, key ->
-            opts |> Keyword.get(String.to_existing_atom(key), key) |> to_string()
-          end)
-        end)
+      {:error, response} ->
+        response
+        |> inspect()
         |> Logger.error()
-
-      {:error, error} ->
-        error |> to_string() |> Logger.error()
     end
   end
 end

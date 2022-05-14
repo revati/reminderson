@@ -4,7 +4,6 @@ defmodule Infrastructure.Dispatcher do
     AutogenerateValuesMiddleware,
     CommandDispatcherMiddleware,
     ValidationMiddleware,
-    ResponseUnifier,
     Pipeline
   }
 
@@ -26,7 +25,6 @@ defmodule Infrastructure.Dispatcher do
     |> Pipeline.initiate(params, options, session)
     |> Pipeline.execute(@dispatch_middlewares)
     |> Pipeline.to_response()
-    |> ResponseUnifier.normalize()
   end
 
   def validate(command, params, session, options \\ []) do
@@ -34,6 +32,5 @@ defmodule Infrastructure.Dispatcher do
     |> Pipeline.initiate(params, options, session)
     |> Pipeline.execute(@validation_middlewares)
     |> Pipeline.to_response()
-    |> ResponseUnifier.normalize()
   end
 end

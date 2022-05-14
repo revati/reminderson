@@ -1,13 +1,26 @@
 defmodule Infrastructure.Dispatcher.CommandDispatcherMiddleware do
   alias Infrastructure.Dispatcher.Pipeline
 
+  require Logger
+
   @command_specific_owerwrites [:timeout]
 
   def pipe_through(%Pipeline{} = pipeline) do
-    case execute_command_from_changeset(pipeline.input, pipeline.assigns.options) do
-      {:error, reason} -> Pipeline.with_error(pipeline, reason)
-      response -> Pipeline.respond(pipeline, response)
-    end
+    pipeline.commands
+    |> Enum.reduce_while(pipeline, fn command, pipeline ->
+      pipeline.data[command]
+      |> execute_command_from_changeset(pipeline.options)
+      |> case do
+        {:ok, response} ->
+          {:cont, Pipeline.with_data_for_command(pipeline, command, {:ok, response})}
+
+        {:error, error} ->
+          {:halt,
+           pipeline
+           |> Pipeline.with_data_for_command(command, {:error, error})
+           |> Pipeline.halt_as_error()}
+      end
+    end)
   end
 
   def handle_response(%Pipeline{} = pipeline), do: pipeline
@@ -25,18 +38,6 @@ defmodule Infrastructure.Dispatcher.CommandDispatcherMiddleware do
     end
   end
 
-  defp execute_command_from_changeset(changesets, options) do
-    changesets
-    |> Enum.reduce_while([], fn {command, changeset}, acc ->
-      changeset
-      |> execute_command_from_changeset(options)
-      |> case do
-        {:ok, response} -> {:cont, Keyword.put(acc, command, response)}
-        {:error, reason} -> {:halt, {:error, reason}}
-      end
-    end)
-  end
-
   defp options_with_command_owerwrites(options, command) do
     @command_specific_owerwrites
     |> Enum.reduce(options, fn key, options ->
@@ -49,6 +50,6 @@ defmodule Infrastructure.Dispatcher.CommandDispatcherMiddleware do
   defp extract_primary_keys_with_values(changeset) do
     :primary_key
     |> changeset.data.__struct__.__schema__()
-    |> Enum.into(%{}, &{&1, Ecto.Changeset.get_field(changeset, &1)})
+    |> Enum.map(&{&1, Ecto.Changeset.get_field(changeset, &1)})
   end
 end

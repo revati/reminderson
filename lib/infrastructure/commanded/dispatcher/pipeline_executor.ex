@@ -7,7 +7,7 @@ defmodule Infrastructure.Dispatcher.PipelineExecutor do
 
   defp do_execute(%Pipeline{stage: :pipe_through} = pipeline, {[], done}) do
     pipeline
-    |> Pipeline.to_stage(:response)
+    |> Pipeline.halt_as_success()
     |> do_execute({[], done})
   end
 

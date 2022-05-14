@@ -1,14 +1,11 @@
 defmodule Infrastructure.Dispatcher.Pipeline do
-  alias Infrastructure.Dispatcher.PipelineExecutor
+  alias Infrastructure.Dispatcher.{PipelineExecutor, ResponseUnifier}
 
   defstruct stage: :pipe_through,
             commands: [],
-            input: %{},
-            output: {},
-            assigns: %{},
-            error: nil
-
-  @stages [:pipe_through, :response, :error]
+            data: [],
+            options: [],
+            multi?: false
 
   @owerwritable_options [:causation_id, :correlation_id, :metadata]
 
@@ -22,59 +19,34 @@ defmodule Infrastructure.Dispatcher.Pipeline do
   ]
 
   def initiate(commands, input, options, session) do
-    %__MODULE__{commands: List.wrap(commands)}
-    |> with_input(input)
-    |> assign(:options, prepare_options(options, session))
+    %__MODULE__{
+      commands: List.wrap(commands),
+      data: [raw_input: Enum.into(input, %{})],
+      multi?: is_list(commands),
+      options: prepare_options(options, session)
+    }
   end
 
   def execute(%__MODULE__{} = pipeline, middlewares) do
     PipelineExecutor.execute(pipeline, middlewares)
   end
 
-  def to_stage(%__MODULE__{} = pipeline, new_stage) when new_stage in @stages do
-    %{pipeline | stage: new_stage}
+  def halt_as_error(%__MODULE__{} = pipeline) do
+    %{pipeline | stage: :error}
   end
 
-  def with_input(%__MODULE__{} = pipeline, input) do
-    %{pipeline | input: Enum.into(input, %{})}
+  def halt_as_success(%__MODULE__{} = pipeline) do
+    %{pipeline | stage: :response}
   end
 
-  def with_error(%__MODULE__{error: nil} = pipeline, e) do
-    %{pipeline | error: e}
-    |> to_stage(:error)
+  def with_data_for_command(%__MODULE__{} = pipeline, command, input) do
+    Map.update!(pipeline, :data, fn data ->
+      Keyword.put(data, command, input)
+    end)
   end
 
-  def assign(%__MODULE__{} = pipeline, values) when is_list(values) do
-    Enum.reduce(values, pipeline, fn {key, value}, pipeline -> assign(pipeline, key, value) end)
-  end
-
-  def assign(%__MODULE__{} = pipeline, key, value) do
-    Map.update!(pipeline, :assigns, fn assigns -> Map.put(assigns, key, value) end)
-  end
-
-  def input_for_command(%__MODULE__{} = pipeline, command) do
-    Map.merge(pipeline.input, Map.get(pipeline.input, command, %{}))
-  end
-
-  def respond(%__MODULE__{} = pipeline, output) do
-    %{pipeline | output: output}
-  end
-
-  def to_response(%__MODULE__{error: error}) when not is_nil(error) do
-    {:error, error}
-  end
-
-  def to_response(%__MODULE__{output: output}) when is_list(output) do
-    output
-    |> Enum.all?(&match?({_, :ok}, &1))
-    |> case do
-      true -> :ok
-      false -> {:ok, output}
-    end
-  end
-
-  def to_response(%__MODULE__{output: output}) when not is_nil(output) do
-    {:ok, output}
+  def to_response(%__MODULE__{} = pipeline) do
+    ResponseUnifier.normalize(pipeline)
   end
 
   defp prepare_options(options, session) do
