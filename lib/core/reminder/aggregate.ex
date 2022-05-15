@@ -34,12 +34,12 @@ defmodule Reminder.Aggregate do
     {:error, :not_found}
   end
 
-  def execute(%__MODULE__{id: id} = aggregate, %Reminder.FetchTweetReasonText{}) do
+  def execute(%__MODULE__{} = aggregate, %Reminder.FetchTweetReasonText{}) do
     case aggregate do
       %{ask_reminder_id: id, reason_id: id} ->
         :ok
 
-      %{reason_id: reason_id} ->
+      %{id: id, reason_id: reason_id} ->
         case Infrastructure.Twitter.get_text_by_id(reason_id) do
           {:ok, text} -> %Reminder.ReasonTextFetched{id: id, reason_text: text}
           {:error, reason} -> {:error, reason}
@@ -52,17 +52,15 @@ defmodule Reminder.Aggregate do
   end
 
   def execute(%__MODULE__{} = a, %Reminder.AcknowledgeTweet{}) do
-    {:error, :not_found}
-
-    # with {:ack, nil} <- {:ack, a.acknowledgement_id},
-    #      text <- Helpers.prepare_acknowledgement_text(a),
-    #      {:ok, tweet} <-
-    #        Infrastructure.Twitter.respond_to_tweet(a.ask_reminder_id, text, quote: a.reason_id) do
-    #   %Reminder.TweetAcknowledged{id: a.id, acknowledgement_id: tweet.tweet_id}
-    # else
-    #   {:ack, _} -> {:ok, :already_acknowledged}
-    #   {:error, reason} -> {:error, reason}
-    # end
+    with {:ack, nil} <- {:ack, a.acknowledgement_id},
+         text <- Helpers.prepare_acknowledgement_text(a),
+         {:ok, tweet} <-
+           Infrastructure.Twitter.respond_to_tweet(a.ask_reminder_id, text, quote: a.reason_id) do
+      %Reminder.TweetAcknowledged{id: a.id, acknowledgement_id: tweet.tweet_id}
+    else
+      {:ack, _} -> :ok
+      {:error, reason} -> {:error, reason}
+    end
   end
 
   def execute(%__MODULE__{id: nil}, %Reminder.RemindAboutTweet{}) do
@@ -78,7 +76,7 @@ defmodule Reminder.Aggregate do
       %Reminder.RemindedAboutTweet{id: a.id, reminder_id: tweet.tweet_id}
     else
       {:ack, _} -> {:error, :missing_acknowledgement}
-      {:rem, _} -> {:ok, :already_reminded}
+      {:rem, _} -> :ok
       {:error, reason} -> {:error, reason}
     end
   end
