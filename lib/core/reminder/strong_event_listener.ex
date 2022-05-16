@@ -5,27 +5,27 @@ defmodule Reminder.StrongEventListener do
     name: __MODULE__,
     consistency: :strong
 
-  project %Reminder.TweetRecorded{} = event, _metadata, fn multi ->
-    Ecto.Multi.insert(multi, :recorded, Reminder.Reminder.recorded_changeset(event))
+  project %Reminder.TweetRecorded{} = event, fn multi ->
+    Ecto.Multi.insert(multi, :recorded, Reminder.State.recorded_changeset(event))
   end
 
-  project %Reminder.TweetAcknowledged{} = event, _metadata, fn multi ->
+  project %Reminder.TweetAcknowledged{} = event, fn multi ->
     Ecto.Multi.update(
       multi,
       :acknowledgement,
-      Reminder.Reminder
+      Reminder.State
       |> Infrastructure.Repo.get!(event.id)
-      |> Reminder.Reminder.acknowledgement_changeset(event)
+      |> Reminder.State.acknowledgement_changeset(event)
     )
   end
 
-  project %Reminder.RemindedAboutTweet{} = event, _metadata, fn multi ->
+  project %Reminder.RemindedAboutTweet{} = event, fn multi ->
     Ecto.Multi.update(
       multi,
       :reminded,
-      Reminder.Reminder
+      Reminder.State
       |> Infrastructure.Repo.get!(event.id)
-      |> Reminder.Reminder.reminded_changeset(event)
+      |> Reminder.State.reminded_changeset(event)
     )
   end
 end

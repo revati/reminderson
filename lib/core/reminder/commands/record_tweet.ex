@@ -1,7 +1,7 @@
 defmodule Reminder.RecordTweet do
   use Infrastructure.Command
 
-  @unique {:unique, [model: Reminder.Reminder, ignore_same_id?: true]}
+  @unique {:unique, [model: Reminder.State, ignore_same_id?: true]}
 
   mex_embedded_schema do
     mex_field(:id, Infrastructure.UUID,
