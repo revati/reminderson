@@ -1,5 +1,7 @@
 defmodule Reminderson do
-  use Boundary, deps: [], exports: [Reminders, Reminders.TweetReminder]
+  use Boundary,
+    deps: [Infrastructure, Reminder],
+    exports: [Reminders, Reminders.Reminder]
 
   @moduledoc """
   Reminderson keeps the contexts that define your domain

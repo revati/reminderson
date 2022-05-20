@@ -24,7 +24,7 @@ defmodule Reminder.TwitterSubscriber do
   end
 
   defp handle_raw_tweet(tweet) do
-    case Infrastructure.dispatch([Reminder.RecordTweet, Reminder.AcknowledgeTweet], tweet, %{
+    case Infrastructure.dispatch(Reminder.RecordTweet, tweet, %{
            system: true
          }) do
       {:ok, response} ->

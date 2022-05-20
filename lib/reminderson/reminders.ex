@@ -6,101 +6,99 @@ defmodule Reminderson.Reminders do
   import Ecto.Query, warn: false
 
   alias Reminderson.Repo
-  alias Reminderson.Reminders.TweetReminder
+  alias Reminderson.Reminders.Reminder
 
   @doc """
-  Returns the list of reminders_tweet.
+  Returns the list of tweet_reminders.
 
   ## Examples
 
       iex> list_tweet_reminders()
-      [%TweetReminder{}, ...]
+      [%Reminder{}, ...]
 
   """
   def list_tweet_reminders do
-    Repo.all(TweetReminder)
+    Repo.all(Reminder)
   end
 
   @doc """
-  Gets a single tweet_reminder.
+  Gets a single reminder.
 
-  Raises `Ecto.NoResultsError` if the Tweet reminder does not exist.
+  Raises `Ecto.NoResultsError` if the Reminder does not exist.
 
   ## Examples
 
-      iex> get_tweet_reminder!(123)
-      %TweetReminder{}
+      iex> get_reminder!(123)
+      %Reminder{}
 
-      iex> get_tweet_reminder!(456)
+      iex> get_reminder!(456)
       ** (Ecto.NoResultsError)
 
   """
-  def get_tweet_reminder!(id), do: Repo.get!(TweetReminder, id)
+  def get_reminder!(id), do: Repo.get!(Reminder, id)
 
   @doc """
-  Creates a tweet_reminder.
+  Creates a reminder.
 
   ## Examples
 
-      iex> create_tweet_reminder(%{field: value})
-      {:ok, %TweetReminder{}}
+      iex> create_reminder(%{field: value})
+      {:ok, %Reminder{}}
 
-      iex> create_tweet_reminder(%{field: bad_value})
+      iex> create_reminder(%{field: bad_value})
       {:error, %Ecto.Changeset{}}
 
   """
-  def create_tweet_reminder(attrs \\ %{})
-
-  def create_tweet_reminder(attrs) do
-    %TweetReminder{}
-    |> TweetReminder.changeset(attrs)
+  def create_reminder(attrs \\ %{}) do
+    %Reminder{}
+    |> Reminder.changeset(attrs)
     |> Repo.insert()
   end
 
   @doc """
-  Updates a tweet_reminder.
+  Updates a reminder.
 
   ## Examples
 
-      iex> update_tweet_reminder(tweet_reminder, %{field: new_value})
-      {:ok, %TweetReminder{}}
+      iex> update_reminder(reminder, %{field: new_value})
+      {:ok, %Reminder{}}
 
-      iex> update_tweet_reminder(tweet_reminder, %{field: bad_value})
+      iex> update_reminder(reminder, %{field: bad_value})
       {:error, %Ecto.Changeset{}}
 
   """
-  def update_tweet_reminder(%TweetReminder{} = tweet_reminder, attrs) do
-    tweet_reminder
-    |> TweetReminder.changeset(attrs)
+  def update_reminder(%Reminder{} = reminder, attrs) do
+    reminder
+    |> Reminder.changeset(attrs)
     |> Repo.update()
   end
 
   @doc """
-  Deletes a tweet_reminder.
+  Deletes a reminder.
 
   ## Examples
 
-      iex> delete_tweet_reminder(tweet_reminder)
-      {:ok, %TweetReminder{}}
+      iex> delete_reminder(reminder)
+      {:ok, %Reminder{}}
 
-      iex> delete_tweet_reminder(tweet_reminder)
+      iex> delete_reminder(reminder)
       {:error, %Ecto.Changeset{}}
 
   """
-  def delete_tweet_reminder(%TweetReminder{} = tweet_reminder) do
-    Repo.delete(tweet_reminder)
+  def delete_reminder(%Reminder{} = reminder) do
+    Repo.delete(reminder)
   end
 
   @doc """
-  Returns an `%Ecto.Changeset{}` for tracking tweet_reminder changes.
+  Returns an `%Ecto.Changeset{}` for tracking reminder changes.
 
   ## Examples
 
-      iex> change_tweet_reminder(tweet_reminder)
-      %Ecto.Changeset{data: %TweetReminder{}}
+      iex> change_reminder(reminder)
+      %Ecto.Changeset{data: %Reminder{}}
 
   """
-  def change_tweet_reminder(%TweetReminder{} = tweet_reminder, attrs \\ %{}) do
-    TweetReminder.changeset(tweet_reminder, attrs)
+  def change_reminder(%Reminder{} = reminder, attrs \\ %{}) do
+    Reminder.changeset(reminder, attrs)
   end
 end

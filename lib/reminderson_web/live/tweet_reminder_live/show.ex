@@ -1,4 +1,4 @@
-defmodule RemindersonWeb.TweetReminderLive.Show do
+defmodule RemindersonWeb.ReminderLive.Show do
   use RemindersonWeb, :live_view
 
   alias Reminderson.Reminders
@@ -13,9 +13,8 @@ defmodule RemindersonWeb.TweetReminderLive.Show do
     {:noreply,
      socket
      |> assign(:page_title, page_title(socket.assigns.live_action))
-     |> assign(:tweet_reminder, Reminders.get_tweet_reminder!(id))}
+     |> assign(:reminder, Reminders.get_reminder!(id))}
   end
 
-  defp page_title(:show), do: "Show Tweet reminder"
-  defp page_title(:edit), do: "Edit Tweet reminder"
+  defp page_title(:show), do: "Show Reminder"
 end

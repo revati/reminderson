@@ -1,52 +1,61 @@
-<h1>Show Tweet reminder</h1>
+<h1>Show Reminder</h1>
 
 <ul>
-
   <li>
-    <strong>Reason:</strong>
-    <%= @tweet_reminder.reason_id %>
+    <strong>Ask reminder:</strong>
+    <%= @reminder.ask_reminder_id %>
   </li>
 
   <li>
-    <strong>Ask reminder:</strong>
-    <%= @tweet_reminder.ask_reminder_id %>
+    <strong>Reason:</strong>
+    <%= @reminder.reason_id %>
   </li>
 
   <li>
     <strong>Acknowledgement:</strong>
-    <%= @tweet_reminder.acknowledgement_id %>
+    <%= @reminder.acknowledgement_id %>
   </li>
 
   <li>
     <strong>Reminder:</strong>
-    <%= @tweet_reminder.reminder_id %>
-  </li>
-
-  <li>
-    <strong>Reason screen name:</strong>
-    <%= @tweet_reminder.reason_screen_name %>
+    <%= @reminder.reminder_id %>
   </li>
 
   <li>
     <strong>Ask reminder screen name:</strong>
-    <%= @tweet_reminder.ask_reminder_screen_name %>
+    <%= @reminder.ask_reminder_screen_name %>
+  </li>
+
+  <li>
+    <strong>Reason screen name:</strong>
+    <%= @reminder.reason_screen_name %>
   </li>
 
   <li>
     <strong>Text:</strong>
-    <%= @tweet_reminder.text %>
+    <%= @reminder.text %>
+  </li>
+
+  <li>
+    <strong>Parsed text:</strong>
+    <%= @reminder.parsed_text %>
+  </li>
+
+  <li>
+    <strong>Reason text:</strong>
+    <%= @reminder.reason_text %>
   </li>
 
   <li>
     <strong>Tags:</strong>
-    <%= @tweet_reminder.tags %>
+    <%= @reminder.tags %>
   </li>
 
   <li>
     <strong>Remind at:</strong>
-    <%= @tweet_reminder.remind_at %>
+    <%= @reminder.remind_at %>
   </li>
 
 </ul>
 
-<span><%= live_redirect "Back", to: Routes.tweet_reminder_index_path(@socket, :index) %></span>
+<span><%= live_redirect "Back", to: Routes.reminder_index_path(@socket, :index) %></span>

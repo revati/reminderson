@@ -1,33 +1,41 @@
-<h1>Atgādinu par</h1>
+<h1>Listing Tweet reminders</h1>
 
 <table>
   <thead>
     <tr>
-      <th>Atgādināt par</th>
-      <th>Teksts</th>
-      <th>Tagi</th>
-      <th>Atgādinājuma datums</th>
+      <th>Ask reminder</th>
+      <th>Reason</th>
+      <th>Acknowledgement</th>
+      <th>Reminder</th>
+      <th>Ask reminder screen name</th>
+      <th>Reason screen name</th>
+      <th>Text</th>
+      <th>Parsed text</th>
+      <th>Reason text</th>
+      <th>Tags</th>
+      <th>Remind at</th>
 
       <th></th>
     </tr>
   </thead>
-  <tbody id="reminders_tweet">
-    <%= for tweet_reminder <- @reminders_tweet do %>
-      <tr id={"tweet_reminder-#{tweet_reminder.id}"}>
-        <td>
-          <%= tweet_reminder.reason_text %> / @<%= tweet_reminder.reason_screen_name %>
-        </td>
-        <td>
-          <%= if tweet_reminder.text do %>
-            <%= tweet_reminder.text %> / @<%= tweet_reminder.ask_reminder_screen_name %>
-          <% end %>
-        </td>
-        <td><%= tweet_reminder.tags %></td>
-        <td><%= tweet_reminder.remind_at %></td>
+  <tbody id="tweet_reminders">
+    <%= for reminder <- @tweet_reminders do %>
+      <tr id={"reminder-#{reminder.id}"}>
+        <td><%= reminder.ask_reminder_id %></td>
+        <td><%= reminder.reason_id %></td>
+        <td><%= reminder.acknowledgement_id %></td>
+        <td><%= reminder.reminder_id %></td>
+        <td><%= reminder.ask_reminder_screen_name %></td>
+        <td><%= reminder.reason_screen_name %></td>
+        <td><%= reminder.text %></td>
+        <td><%= reminder.parsed_text %></td>
+        <td><%= reminder.reason_text %></td>
+        <td><%= reminder.tags %></td>
+        <td><%= reminder.remind_at %></td>
 
         <td>
-          <span><%= live_redirect "Show", to: Routes.tweet_reminder_show_path(@socket, :show, tweet_reminder) %></span>
-        </td>
+          <span><%= live_redirect "Show", to: Routes.reminder_show_path(@socket, :show, reminder) %></span>
+       </td>
       </tr>
     <% end %>
   </tbody>

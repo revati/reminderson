@@ -23,7 +23,8 @@ defmodule Reminderson.Application do
       Reminder.TwitterSubscriber,
       Reminder.EventListener,
       Reminder.StrongEventListener,
-      {Mutex, name: Infrastructure.Mutex}
+      {Mutex, name: Infrastructure.Mutex},
+      Reminderson.EventListener
 
       # Start a worker by calling: Reminderson.Worker.start_link(arg)
       # {Reminderson.Worker, arg}
