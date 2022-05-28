@@ -12,5 +12,6 @@ defmodule Reminder.TweetRecorded do
     mex_field(:reason_id, :integer)
     mex_field(:reason_screen_name, :string)
     mex_field(:reason_text, :string)
+    mex_field(:created_at, :utc_datetime)
   end
 end

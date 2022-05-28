@@ -78,12 +78,12 @@ defmodule Infrastructure.Twitter.Parser do
         do: now.year + 1,
         else: now.year
 
-    DateTime.new(Date.new!(year, parts.month, parts.day), @time, now.timezone)
+    DateTime.new(Date.new!(year, parts.month, parts.day), @time, now.time_zone)
   end
 
   def exact_date(%{"day" => _, "month" => _, "year" => _} = parts, now) do
     parts = normalize_parts(parts)
-    DateTime.new(Date.new!(parts.year, parts.month, parts.day), @time, now.timezone)
+    DateTime.new(Date.new!(parts.year, parts.month, parts.day), @time, now.time_zone)
   end
 
   def diff_date(%{"period_type" => period, "period_length" => ""}, now) do

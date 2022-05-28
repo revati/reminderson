@@ -17,6 +17,7 @@ defmodule Reminderson.Reminders.Reminder do
     field :tags, {:array, :string}
     field :text, :string
 
+    field :created_at, :utc_datetime
     timestamps()
   end
 
@@ -40,14 +41,15 @@ defmodule Reminderson.Reminders.Reminder do
       :parsed_text,
       :reason_text,
       :tags,
-      :remind_at
+      :remind_at,
+      :created_at
     ])
     |> validate_required([
       :ask_reminder_id,
       :reason_id,
       :ask_reminder_screen_name,
       :reason_screen_name,
-      :remind_at
+      :created_at
     ])
     |> unique_constraint(:reminder_id)
     |> unique_constraint(:acknowledgement_id)

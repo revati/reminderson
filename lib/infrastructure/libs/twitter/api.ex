@@ -11,19 +11,29 @@ defmodule Infrastructure.Twitter.Api do
     end)
   end
 
-  def fetch_latest_mentions(_since_id \\ nil) do
+  def fetch_historic_mentions(since_id) do
     account = account_to_follow()
+    count = 200
 
-    ExTwitter.mentions_timeline(count: 5)
+    [count: count]
+    |> then(fn opts ->
+      if since_id,
+        do: Keyword.put(opts, :since_id, since_id),
+        else: opts
+    end)
+    |> ExTwitter.mentions_timeline()
     |> Enum.reject(&is_error?/1)
     |> Enum.reject(&is_author?(&1, account))
     |> Enum.map(&normalize/1)
+    |> then(fn tweets ->
+      {tweets, length(tweets) < count}
+    end)
   end
 
   def mentions_stream() do
     account = account_to_follow()
 
-    [track: "@" <> account]
+    [track: "@" <> "AtgadiniMan"]
     |> ExTwitter.stream_filter(:infinity)
     |> Stream.reject(&is_error?/1)
     |> Stream.reject(&is_author?(&1, account))

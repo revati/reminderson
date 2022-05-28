@@ -15,6 +15,7 @@ defmodule Reminderson.Repo.Migrations.CreateTweetReminders do
         add :parsed_text, :string
         add :reason_text, :string
         add :tags, {:array, :string}
+        add :created_at, :utc_datetime
         add :remind_at, :utc_datetime
 
         timestamps()
