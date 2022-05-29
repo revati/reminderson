@@ -43,6 +43,10 @@
   color: #aaa
 }
 
+.text-warning {
+  color: #8a6d3b;
+}
+
 .invalid-feedback {
   color: #a94442;
   display: block;
