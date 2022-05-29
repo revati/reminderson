@@ -1,19 +1,12 @@
-<h1>Listing Tweet reminders</h1>
-
 <table>
   <thead>
     <tr>
-      <th>Ask reminder</th>
+      <th>Asked by</th>
+      <th>Asked about</th>
       <th>Reason</th>
-      <th>Acknowledgement</th>
-      <th>Reminder</th>
-      <th>Ask reminder screen name</th>
-      <th>Reason screen name</th>
-      <th>Text</th>
-      <th>Parsed text</th>
-      <th>Reason text</th>
-      <th>Tags</th>
       <th>Remind at</th>
+      <th>Tags</th>
+      <th>Ack/Remind</th>
 
       <th></th>
     </tr>
@@ -21,17 +14,16 @@
   <tbody id="tweet_reminders">
     <%= for reminder <- @tweet_reminders do %>
       <tr id={"reminder-#{reminder.id}"}>
-        <td><%= reminder.ask_reminder_id %></td>
-        <td><%= reminder.reason_id %></td>
-        <td><%= reminder.acknowledgement_id %></td>
-        <td><%= reminder.reminder_id %></td>
         <td><%= reminder.ask_reminder_screen_name %></td>
         <td><%= reminder.reason_screen_name %></td>
-        <td><%= reminder.text %></td>
-        <td><%= reminder.parsed_text %></td>
         <td><%= reminder.reason_text %></td>
-        <td><%= reminder.tags %></td>
         <td><%= reminder.remind_at %></td>
+        <td><%= Enum.map(reminder.tags, &"##{&1}") %></td>
+        <td>
+        	<span title="Acknowledgement" class={if reminder.acknowledgement_id, do: "text-success", else: "text-idle"}>&#x2713;</span>
+           /
+        	<span title="Reminder" class={if reminder.reminder_id, do: "text-success", else: "text-idle"}>&#x2713;</span>
+        </td>
 
         <td>
           <span><%= live_redirect "Show", to: Routes.reminder_show_path(@socket, :show, reminder) %></span>
