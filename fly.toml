@@ -1,4 +1,4 @@
-# fly.toml file generated for atgadinators on 2022-02-19T18:26:56+02:00
+# fly.toml file generated for atgadinators on 2022-05-29T16:30:20+03:00
 
 app = "atgadinators"
 
@@ -7,6 +7,13 @@ kill_timeout = 5
 processes = []
 
 [env]
+  TWITTER_ACCESS_SECRET = "some"
+  TWITTER_ACCESS_TOKEN = "some"
+  TWITTER_ACCOUNT_TO_FALLOW = "some"
+  TWITTER_CONSUMER_KEY = "some"
+  TWITTER_CONSUMER_SECRET = "some"
+  TWITTER_FETCH_PAST_MENTIONS = 0
+  TWITTER_SEND_TWEETS = 1
 
 [deploy]
   release_command = "/app/bin/reminderson eval Reminderson.Release.migrate"
@@ -28,6 +35,7 @@ processes = []
     type = "connections"
 
   [[services.ports]]
+    force_https = true
     handlers = ["http"]
     port = 80
 
