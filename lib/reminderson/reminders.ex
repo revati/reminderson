@@ -17,7 +17,7 @@ defmodule Reminderson.Reminders do
       [%Reminder{}, ...]
 
   """
-  def list_tweet_reminders do
+  def list_tweet_reminders(_params) do
     Reminder
     |> order_by([q], desc: q.created_at)
     |> Repo.all()
