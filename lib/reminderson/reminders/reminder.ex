@@ -2,7 +2,7 @@ defmodule Reminderson.Reminders.Reminder do
   use Ecto.Schema
   import Ecto.Changeset
 
-  @primary_key {:id, :binary_id, autogenerate: true}
+  @primary_key {:id, :binary_id, autogenerate: false}
   @foreign_key_type :binary_id
   schema "tweet_reminders" do
     field :acknowledgement_id, :integer
@@ -31,6 +31,7 @@ defmodule Reminderson.Reminders.Reminder do
   def changeset(reminder, attrs) do
     reminder
     |> cast(attrs, [
+      :id,
       :ask_reminder_id,
       :reason_id,
       :acknowledgement_id,
@@ -45,6 +46,7 @@ defmodule Reminderson.Reminders.Reminder do
       :created_at
     ])
     |> validate_required([
+      :id,
       :ask_reminder_id,
       :reason_id,
       :ask_reminder_screen_name,
