@@ -2,20 +2,20 @@ defmodule Reminder.Helpers do
   def prepare_acknowledgement_text(%Reminder.Aggregate{remind_at: nil} = aggregate) do
     tweet_link = quote_tweet_link(aggregate)
 
-    "@#{aggregate.ask_reminder_screen_name} pieglabāšu šo tweetu vēlākam #{tweet_link}. #{aggregate.id}"
+    "@#{aggregate.ask_reminder_screen_name} #{tweet_link} pieglabāšu šo tweetu vēlākam. #{aggregate.id}"
   end
 
   def prepare_acknowledgement_text(%Reminder.Aggregate{} = aggregate) do
     tweet_link = quote_tweet_link(aggregate)
 
-    "@#{aggregate.ask_reminder_screen_name} atgadinasu tev par šo tweetu #{NaiveDateTime.to_string(aggregate.remind_at)} #{tweet_link}. #{aggregate.id}"
+    "@#{aggregate.ask_reminder_screen_name} #{tweet_link} atgādināšu tev par šo tweetu #{NaiveDateTime.to_string(aggregate.remind_at)}. #{aggregate.id}"
   end
 
   def prepare_reminder_text(%Reminder.Aggregate{} = aggregate) do
     tags = aggregate.tags |> Enum.map(&"##{&1}") |> Enum.join(" ")
     tweet_link = quote_tweet_link(aggregate)
 
-    "@#{aggregate.ask_reminder_screen_name} Atgādinu: #{aggregate.parsed_text} #{tags} #{tweet_link}. #{aggregate.id}"
+    "@#{aggregate.ask_reminder_screen_name} #{tweet_link} Atgādinu: #{aggregate.parsed_text} #{tags}. #{aggregate.id}"
   end
 
   defp quote_tweet_link(%Reminder.Aggregate{} = aggregate) do

@@ -1,4 +1,6 @@
 defmodule Infrastructure.Twitter.Api do
+  @count 200
+
   def get_text_by_id(id) do
     if should_send_twets?() do
       id
@@ -16,22 +18,25 @@ defmodule Infrastructure.Twitter.Api do
   end
 
   def fetch_historic_mentions(since_id) do
-    account = account_to_follow()
-    count = 200
+    if since_id || should_fetch_past_mentions?() do
+      account = account_to_follow()
 
-    [count: count]
-    |> then(fn opts ->
-      if since_id,
-        do: Keyword.put(opts, :since_id, since_id),
-        else: opts
-    end)
-    |> ExTwitter.mentions_timeline()
-    |> Enum.reject(&is_error?/1)
-    |> Enum.reject(&is_author?(&1, account))
-    |> Stream.reject(&is_reply_to_author?(&1, account))
-    |> Enum.map(&normalize/1)
+      [count: @count]
+      |> then(fn opts ->
+        if since_id,
+          do: Keyword.put(opts, :since_id, since_id),
+          else: opts
+      end)
+      |> ExTwitter.mentions_timeline()
+      |> Enum.reject(&is_error?/1)
+      |> Enum.reject(&is_author?(&1, account))
+      |> Stream.reject(&is_reply_to_author?(&1, account))
+      |> Enum.map(&normalize/1)
+    else
+      []
+    end
     |> then(fn tweets ->
-      {tweets, length(tweets) < count}
+      {tweets, length(tweets) < @count}
     end)
   end
 
@@ -120,12 +125,16 @@ defmodule Infrastructure.Twitter.Api do
     }
   end
 
-  defp account_to_follow() do
+  defp account_to_follow do
     Application.fetch_env!(:extwitter, :oauth)[:account_name]
   end
 
-  defp should_send_twets?() do
+  defp should_send_twets? do
     Application.fetch_env!(:extwitter, :oauth)[:send_tweets?]
+  end
+
+  defp should_fetch_past_mentions? do
+    Application.fetch_env!(:extwitter, :oauth)[:fetch_past_mentions?]
   end
 
   defp generate_fake_tweet(opts) do

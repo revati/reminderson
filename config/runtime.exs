@@ -18,7 +18,8 @@ config :extwitter, :oauth,
   access_token: System.fetch_env!("TWITTER_ACCESS_TOKEN"),
   access_token_secret: System.fetch_env!("TWITTER_ACCESS_SECRET"),
   account_name: String.downcase(System.fetch_env!("TWITTER_ACCOUNT_TO_FALLOW")),
-  send_tweets?: System.fetch_env!("TWITTER_SEND_TWEETS") in ["1", 1, "true"]
+  send_tweets?: System.fetch_env!("TWITTER_SEND_TWEETS") in ["1", 1, "true"],
+  fetch_past_mentions?: System.fetch_env!("TWITTER_FETCH_PAST_MENTIONS") in ["1", 1, "true"]
 
 if config_env() == :prod do
   database_url =
