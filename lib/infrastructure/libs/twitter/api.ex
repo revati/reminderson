@@ -1,14 +1,18 @@
 defmodule Infrastructure.Twitter.Api do
   def get_text_by_id(id) do
-    id
-    |> ExTwitter.show()
-    |> then(fn
-      %ExTwitter.Model.Tweet{text: text} ->
-        {:ok, text}
+    if should_send_twets?() do
+      id
+      |> ExTwitter.show()
+      |> then(fn
+        %ExTwitter.Model.Tweet{text: text} ->
+          {:ok, text}
 
-      nil ->
-        {:error, :not_found}
-    end)
+        nil ->
+          {:error, :not_found}
+      end)
+    else
+      {:ok, ""}
+    end
   end
 
   def fetch_historic_mentions(since_id) do
@@ -24,6 +28,7 @@ defmodule Infrastructure.Twitter.Api do
     |> ExTwitter.mentions_timeline()
     |> Enum.reject(&is_error?/1)
     |> Enum.reject(&is_author?(&1, account))
+    |> Stream.reject(&is_reply_to_author?(&1, account))
     |> Enum.map(&normalize/1)
     |> then(fn tweets ->
       {tweets, length(tweets) < count}
@@ -37,27 +42,23 @@ defmodule Infrastructure.Twitter.Api do
     |> ExTwitter.stream_filter(:infinity)
     |> Stream.reject(&is_error?/1)
     |> Stream.reject(&is_author?(&1, account))
+    |> Stream.reject(&is_reply_to_author?(&1, account))
     |> Stream.map(&normalize/1)
   end
 
-  def respond_to_tweet(respond_to, text, _opts \\ []) do
-    # ExTwitter.update(
-    #   text,
-    #   in_reply_to_status_id: respond_to,
-    #   quoted_status_id: opts[:quote]
-    # )
-
-    id = :rand.uniform(8_999_999_999_999_999_999) + 1_000_000_000_000_000_000
-
-    %ExTwitter.Model.Tweet{
-      id: id,
-      text: text,
-      user: %{screen_name: "test"},
-      in_reply_to_status_id: respond_to,
-      in_reply_to_screen_name: "another",
-      created_at: "Wed Sep 14 16:50:47 +0000 2011"
-    }
-    |> then(&{:ok, normalize(&1)})
+  def respond_to_tweet(respond_to, text, opts \\ []) do
+    if should_send_twets?() do
+      ExTwitter.update(
+        text,
+        in_reply_to_status_id: respond_to,
+        quoted_status_id: opts[:quote]
+      )
+      |> then(&{:ok, normalize(&1)})
+    else
+      [respond_to: respond_to, text: text]
+      |> generate_fake_tweet()
+      |> then(&{:ok, normalize(&1)})
+    end
   rescue
     e in ExTwitter.Error ->
       {:error, %{type: :error, code: e.code, message: e.message}}
@@ -102,6 +103,11 @@ defmodule Infrastructure.Twitter.Api do
     String.downcase(raw_tweet.user.screen_name) == account_to_follow
   end
 
+  defp is_reply_to_author?(%ExTwitter.Model.Tweet{} = raw_tweet, account_to_follow) do
+    raw_tweet.in_reply_to_status_id &&
+      String.downcase(raw_tweet.in_reply_to_screen_name) == account_to_follow
+  end
+
   defp normalize(%ExTwitter.Model.Tweet{} = tweet) do
     %{
       tweet_id: tweet.id,
@@ -116,5 +122,22 @@ defmodule Infrastructure.Twitter.Api do
 
   defp account_to_follow() do
     Application.fetch_env!(:extwitter, :oauth)[:account_name]
+  end
+
+  defp should_send_twets?() do
+    Application.fetch_env!(:extwitter, :oauth)[:send_tweets?]
+  end
+
+  defp generate_fake_tweet(opts) do
+    id = :rand.uniform(8_999_999_999_999_999_999) + 1_000_000_000_000_000_00
+
+    %ExTwitter.Model.Tweet{
+      id: id,
+      text: opts[:text],
+      user: %{screen_name: "test"},
+      in_reply_to_status_id: opts[:respond_to],
+      in_reply_to_screen_name: "another",
+      created_at: "Wed Sep 14 16:50:47 +0000 2011"
+    }
   end
 end

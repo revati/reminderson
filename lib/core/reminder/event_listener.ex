@@ -12,8 +12,8 @@ defmodule Reminder.EventListener do
     remind_job_opts = if event.remind_at, do: [scheduled_at: event.remind_at], else: []
 
     multi
-    # |> Oban.insert(:reason, FetchReasonTextJob.new(%{id: event.id}))
-    # |> Oban.insert(:acknowledge, AcknowledgeTweetJob.new(%{id: event.id}))
-    # |> Oban.insert(:remind, RemindAboutTweetJob.new(%{id: event.id}, remind_job_opts))
+    |> Oban.insert(:reason, FetchReasonTextJob.new(%{id: event.id}))
+    |> Oban.insert(:acknowledge, AcknowledgeTweetJob.new(%{id: event.id}))
+    |> Oban.insert(:remind, RemindAboutTweetJob.new(%{id: event.id}, remind_job_opts))
   end
 end
