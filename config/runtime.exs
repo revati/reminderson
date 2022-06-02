@@ -21,6 +21,19 @@ config :extwitter, :oauth,
   send_tweets?: System.fetch_env!("TWITTER_SEND_TWEETS") in ["1", 1, "true"],
   fetch_past_mentions?: System.fetch_env!("TWITTER_FETCH_PAST_MENTIONS") in ["1", 1, "true"]
 
+config :sentry,
+  dsn: System.fetch_env!("SENTRY_DSN"),
+  environment_name: config_env(),
+  enable_source_code_context: true,
+  root_source_code_path: File.cwd!(),
+  tags: %{
+    env: "production"
+  },
+  included_environments: [:prod, :dev]
+
+config :logger,
+  backends: [:console, Sentry.LoggerBackend]
+
 if config_env() == :prod do
   database_url =
     System.fetch_env!("DATABASE_URL") ||
@@ -29,9 +42,29 @@ if config_env() == :prod do
       For example: ecto://USER:PASS@HOST/DATABASE
       """
 
+  database_url_reports =
+    System.fetch_env!("DATABASE_URL_REPORTS") ||
+      raise """
+      environment variable DATABASE_URL is missing.
+      For example: ecto://USER:PASS@HOST/DATABASE
+      """
+
   # maybe_ipv6 = if System.get_env("ECTO_IPV6"), do: [:inet6], else: []
 
   config :reminderson, Reminderson.Repo,
+    # ssl: true,
+    url: database_url_reports,
+    pool_size: String.to_integer(System.get_env("POOL_SIZE") || "10"),
+    socket_options: [:inet6]
+
+  config :reminderson, Infrastructure.Repo,
+    # ssl: true,
+    url: database_url,
+    pool_size: String.to_integer(System.get_env("POOL_SIZE") || "10"),
+    socket_options: [:inet6],
+    migration_source: "core_schema_migrations"
+
+  config :reminderson, Infrastructure.EventStore,
     # ssl: true,
     url: database_url,
     pool_size: String.to_integer(System.get_env("POOL_SIZE") || "10"),

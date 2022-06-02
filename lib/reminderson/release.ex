@@ -11,6 +11,8 @@ defmodule Reminderson.Release do
     for repo <- repos() do
       {:ok, _, _} = Ecto.Migrator.with_repo(repo, &Ecto.Migrator.run(&1, :up, all: true))
     end
+
+    :ok = init_event_store()
   end
 
   def rollback(repo, version) do
@@ -24,5 +26,15 @@ defmodule Reminderson.Release do
 
   defp load_app do
     Application.load(@app)
+  end
+
+  def init_event_store do
+    {:ok, _} = Application.ensure_all_started(:postgrex)
+    {:ok, _} = Application.ensure_all_started(:ssl)
+
+    config = Infrastructure.EventStore.config()
+
+    :ok = EventStore.Tasks.Create.exec(config, [])
+    :ok = EventStore.Tasks.Init.exec(config, [])
   end
 end

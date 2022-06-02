@@ -59,7 +59,8 @@ defmodule Reminderson.MixProject do
       {:commanded_eventstore_adapter, "~> 1.2"},
       {:commanded_ecto_projections, "~> 1.2"},
       {:boundary, "~> 0.9", runtime: false},
-      {:mutex, "~> 1.3.1"}
+      {:mutex, "~> 1.3.1"},
+      {:sentry, "~> 8.0"}
     ]
   end
 
@@ -71,7 +72,7 @@ defmodule Reminderson.MixProject do
   # See the documentation for `Mix` for more info on aliases.
   defp aliases do
     [
-      setup: ["deps.get", "ecto.setup"],
+      setup: ["deps.get", "es.setup", "ecto.setup"],
       "ecto.setup": ["ecto.create", "ecto.migrate", "run priv/repo/seeds.exs"],
       "ecto.reset": ["ecto.drop", "ecto.setup"],
       "es.setup": ["event_store.create", "event_store.init", "event_store.migrate"],

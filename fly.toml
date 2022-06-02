@@ -1,10 +1,13 @@
-# fly.toml file generated for atgadinators on 2022-05-29T16:30:20+03:00
+# fly.toml file generated for atgadinators on 2022-05-29T17:04:27+03:00
 
 app = "atgadinators"
 
 kill_signal = "SIGTERM"
 kill_timeout = 5
 processes = []
+
+[deploy]
+  release_command = "/app/bin/reminderson eval Reminderson.Release.migrate"
 
 [env]
   TWITTER_ACCESS_SECRET = "some"
@@ -14,9 +17,6 @@ processes = []
   TWITTER_CONSUMER_SECRET = "some"
   TWITTER_FETCH_PAST_MENTIONS = 0
   TWITTER_SEND_TWEETS = 1
-
-[deploy]
-  release_command = "/app/bin/reminderson eval Reminderson.Release.migrate"
 
 [experimental]
   allowed_public_ports = []
@@ -44,7 +44,7 @@ processes = []
     port = 443
 
   [[services.tcp_checks]]
-    grace_period = "1s"
+    grace_period = "30s"
     interval = "15s"
     restart_limit = 0
     timeout = "2s"

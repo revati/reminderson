@@ -1,6 +1,6 @@
 defmodule Reminderson do
   use Boundary,
-    deps: [Infrastructure, Reminder],
+    deps: [Infrastructure, Infrastructure.EventStore, Reminder],
     exports: [Reminders, Reminders.Reminder]
 
   @moduledoc """
