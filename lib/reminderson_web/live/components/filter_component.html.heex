@@ -1,0 +1,24 @@
+<div id={@id}>
+  <.form
+    let={f}
+    for={@changeset}
+    id={"#{@id}-form"}
+    as={"#{@id}-form"}
+    phx-target={@myself}
+    phx-submit="filter"
+    >
+      <%= label f, :ask_reminder_screen_name, "Asked by" %>
+      <%= select f, :ask_reminder_screen_name, ["" | @ask_reminder_screen_name_select] %>
+      <%= error_tag f, :ask_reminder_screen_name %>
+
+      <%= label f, :reason_screen_name, "Asked about" %>
+      <%= select f, :reason_screen_name, ["" | @reason_screen_name_select] %>
+      <%= error_tag f, :reason_screen_name %>
+
+      <%= label f, :tags, "Tags" %>
+      <%= multiple_select f, :tags, ["" | @tags_select] %>
+      <%= error_tag f, :tags %>
+
+      <%= submit("Filter", phx_disable_with: "Filtering...") %>
+  </.form>
+</div>

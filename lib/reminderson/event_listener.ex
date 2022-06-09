@@ -5,16 +5,30 @@ defmodule Reminderson.EventListener do
     name: __MODULE__
 
   alias Reminderson.Reminders.Reminder, as: ReminderStruct
+  alias Reminderson.Reminders.Tag, as: TagStruct
 
   @impl Commanded.Event.Handler
   project event, _metadata, fn multi ->
     case event do
       %Reminder.TweetRecorded{} = event ->
-        Ecto.Multi.insert(
-          multi,
-          :reminder,
-          ReminderStruct.changeset(event)
+        raw_tags = Map.get(event, :tags)
+
+        multi
+        |> Ecto.Multi.insert_all(
+          :inset_tags,
+          TagStruct,
+          Enum.map(raw_tags, &%{tag: &1}),
+          on_conflict: :nothing,
+          conflict_target: :tag
         )
+        |> Ecto.Multi.run(:tags, fn repo, _ ->
+          {:ok, repo.all(from t in TagStruct, where: t.tag in ^raw_tags)}
+        end)
+        |> Ecto.Multi.insert(:reminder, fn %{tags: tags} ->
+          event
+          |> Map.put(:tags, tags)
+          |> ReminderStruct.changeset()
+        end)
 
       %reminder_update_event{} = event
       when reminder_update_event in [
@@ -22,7 +36,10 @@ defmodule Reminderson.EventListener do
              Reminder.TweetAcknowledged,
              Reminder.RemindedAboutTweet
            ] ->
-        case Reminderson.Repo.get(ReminderStruct, event.id) do
+        ReminderStruct
+        |> Reminderson.Repo.get(event.id)
+        |> Reminderson.Repo.preload([:tags])
+        |> case do
           nil ->
             multi
 

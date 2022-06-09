@@ -7,6 +7,7 @@ defmodule Reminderson.Reminders do
 
   alias Reminderson.Repo
   alias Reminderson.Reminders.Reminder
+  alias Reminderson.Reminders.Tag
 
   @doc """
   Returns the list of tweet_reminders.
@@ -17,9 +18,39 @@ defmodule Reminderson.Reminders do
       [%Reminder{}, ...]
 
   """
-  def list_tweet_reminders(_params) do
+  def list_tweet_reminders(params) do
     Reminder
     |> order_by([q], desc: q.created_at)
+    |> apply_filters(params)
+    |> Repo.all()
+    |> Repo.preload(:tags)
+  end
+
+  def ask_reminder_screen_name_list(_params) do
+    Reminder
+    |> select([:ask_reminder_screen_name])
+    |> distinct(true)
+    |> Repo.all()
+    |> Enum.map(& &1.ask_reminder_screen_name)
+  end
+
+  def reason_screen_name_list(_params) do
+    Reminder
+    |> select([:reason_screen_name])
+    |> distinct(true)
+    |> Repo.all()
+    |> Enum.map(& &1.reason_screen_name)
+  end
+
+  def tags_list(params) do
+    Tag
+    |> then(fn query ->
+      cond do
+        is_list(params[:tag]) -> where(query, [q], q.tag in ^params[:tag])
+        is_binary(params[:tag]) -> where(query, tag: ^params[:tag])
+        true -> query
+      end
+    end)
     |> Repo.all()
   end
 
@@ -37,7 +68,7 @@ defmodule Reminderson.Reminders do
       ** (Ecto.NoResultsError)
 
   """
-  def get_reminder!(id), do: Repo.get!(Reminder, id)
+  def get_reminder!(id), do: Reminder |> Repo.get!(id) |> Repo.preload(:tags)
 
   @doc """
   Creates a reminder.
@@ -102,5 +133,27 @@ defmodule Reminderson.Reminders do
   """
   def change_reminder(%Reminder{} = reminder, attrs \\ %{}) do
     Reminder.changeset(reminder, attrs)
+  end
+
+  defp apply_filters({_key, value}, query) when value in [nil, ""], do: query
+
+  defp apply_filters({key, value}, query)
+       when key in [:ask_reminder_screen_name, "ask_reminder_screen_name"],
+       do: where(query, ask_reminder_screen_name: ^value)
+
+  defp apply_filters({key, value}, query)
+       when key in [:reason_screen_name, "reason_screen_name"],
+       do: where(query, reason_screen_name: ^value)
+
+  defp apply_filters({key, value}, query)
+       when key in [:tags, "tags"] do
+    query
+    |> join(:left, [q], assoc(q, :tags), as: :tags)
+    |> where([tags: t], t.tag in ^value)
+    |> distinct([q], q.id)
+  end
+
+  defp apply_filters(query, params) do
+    Enum.reduce(params, query, &apply_filters/2)
   end
 end

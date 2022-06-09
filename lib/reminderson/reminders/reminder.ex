@@ -2,6 +2,8 @@ defmodule Reminderson.Reminders.Reminder do
   use Ecto.Schema
   import Ecto.Changeset
 
+  alias Reminderson.Reminders.Tag
+
   @primary_key {:id, :binary_id, autogenerate: false}
   @foreign_key_type :binary_id
   schema "tweet_reminders" do
@@ -14,10 +16,16 @@ defmodule Reminderson.Reminders.Reminder do
     field :reason_text, :string
     field :remind_at, :utc_datetime
     field :reminder_id, :integer
-    field :tags, {:array, :string}
     field :text, :string
 
     field :created_at, :utc_datetime
+
+    many_to_many :tags, Tag,
+      join_through: "tweet_reminders_tags",
+      unique: true,
+      on_replace: :delete,
+      preload_order: [asc: :tag]
+
     timestamps()
   end
 
@@ -41,7 +49,6 @@ defmodule Reminderson.Reminders.Reminder do
       :text,
       :parsed_text,
       :reason_text,
-      :tags,
       :remind_at,
       :created_at
     ])
@@ -56,5 +63,12 @@ defmodule Reminderson.Reminders.Reminder do
     |> unique_constraint(:reminder_id)
     |> unique_constraint(:acknowledgement_id)
     |> unique_constraint(:ask_reminder_id)
+    |> then(fn changeset ->
+      if is_list(attrs[:tags]) do
+        put_assoc(changeset, :tags, attrs[:tags])
+      else
+        changeset
+      end
+    end)
   end
 end

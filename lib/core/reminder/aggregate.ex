@@ -70,13 +70,15 @@ defmodule Reminder.Aggregate do
   def execute(%__MODULE__{} = a, %Reminder.RemindAboutTweet{}) do
     with {:ack, ack} when not is_nil(ack) <- {:ack, a.acknowledgement_id},
          {:rem, nil} <- {:rem, a.reminder_id},
+         {:rem_time, rem} when not is_nil(rem) <- {:rem_time, a.remind_at},
          text <- Helpers.prepare_reminder_text(a),
          {:ok, tweet} <-
            Infrastructure.Twitter.respond_to_tweet(a.acknowledgement_id, text, quote: a.reason_id) do
       %Reminder.RemindedAboutTweet{id: a.id, reminder_id: tweet.tweet_id}
     else
-      {:ack, _} -> {:error, :missing_acknowledgement}
       {:rem, _} -> :ok
+      {:ack, _} -> {:error, :missing_acknowledgement}
+      {:rem_time, nil} -> {:error, :no_reminder_time_specified}
       {:error, reason} -> {:error, reason}
     end
   end

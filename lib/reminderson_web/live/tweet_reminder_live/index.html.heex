@@ -1,3 +1,9 @@
+<.live_component module={RemindersonWeb.FilterComponent} 
+  id="filter" 
+  params={@params} 
+  redirect_to={&Routes.reminder_index_path(@socket, :index, &1)}
+/>
+
 <table>
   <thead>
     <tr>
@@ -18,7 +24,7 @@
         <td><%= reminder.reason_screen_name %></td>
         <td><%= reminder.reason_text %></td>
         <td><%= reminder.remind_at %></td>
-        <td><%= Enum.map(reminder.tags, &"##{&1}") %></td>
+        <td><%= Enum.map(reminder.tags, &"##{&1.tag}") %></td>
         <td>
         	<span title="Acknowledgement" class={if reminder.acknowledgement_id, do: "text-success", else: "text-idle"}>&#x2713;</span>
            /

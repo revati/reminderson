@@ -48,7 +48,7 @@
 
   <li>
     <strong>Tags:</strong>
-    <%= @reminder.tags %>
+    <%= Enum.map(@reminder.tags, &"##{&1.tag}") %>
   </li>
 
   <li>
