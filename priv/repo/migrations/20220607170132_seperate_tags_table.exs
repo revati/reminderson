@@ -19,8 +19,8 @@ defmodule Reminderson.Repo.Migrations.SeperateTagsTable do
       create unique_index(:tweet_tags, [:tag])
 
       create table(:tweet_reminders_tags, primary_key: false) do
-        add :reminder_id, references(:tweet_reminders)
-        add :tag_id, references(:tweet_tags)
+        add :reminder_id, references(:tweet_reminders, type: :binary_id)
+        add :tag_id, references(:tweet_tags, type: :binary_id)
       end
 
       create unique_index(:tweet_reminders_tags, [:reminder_id, :tag_id])
