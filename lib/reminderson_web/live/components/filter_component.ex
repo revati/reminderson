@@ -28,16 +28,20 @@ defmodule RemindersonWeb.FilterComponent do
       changeset
       |> Changeset.apply_changes()
       |> Map.from_struct()
+      |> remove_empty()
     end
 
     def to_changes(%Changeset{} = changeset) do
-      changeset
-      |> Map.get(:changes)
-      |> then(fn
-        %{tags: tags} = params when tags in [[], [""]] -> Map.drop(params, [:tags])
-        %{tags: _tags} = params -> Map.update!(params, :tags, &Enum.join(&1, ","))
-        params -> params
+      changeset |> Map.get(:changes) |> remove_empty()
+    end
+
+    defp remove_empty(payload) do
+      payload
+      |> Enum.filter(fn
+        {_key, value} when value in [nil, "", [], [""]] -> false
+        _ -> true
       end)
+      |> Enum.into(%{})
     end
   end
 
