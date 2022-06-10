@@ -25,5 +25,9 @@ defmodule Reminderson.Repo.Migrations.SeperateTagsTable do
 
       create unique_index(:tweet_reminders_tags, [:reminder_id, :tag_id])
     end
+
+    if repo() == Infrastructure.Repo do
+      execute "UPDATE subscriptions SET last_seen = 0 WHERE subscription_name = 'Reminderson.EventListener'"
+    end
   end
 end
