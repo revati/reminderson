@@ -4,6 +4,7 @@ defmodule RemindersonWeb.FilterComponent do
 
   defmodule Form do
     use Infrastructure.Schema
+    alias Ecto.Changeset
 
     mex_embedded_schema do
       mex_field(:ask_reminder_screen_name, :string)
@@ -22,6 +23,22 @@ defmodule RemindersonWeb.FilterComponent do
 
       Infrastructure.Mex.Validator.validate(schema, params, [])
     end
+
+    def to_params(%Changeset{} = changeset) do
+      changeset
+      |> Changeset.apply_changes()
+      |> Map.from_struct()
+    end
+
+    def to_changes(%Changeset{} = changeset) do
+      changeset
+      |> Map.get(:changes)
+      |> then(fn
+        %{tags: tags} = params when tags in [[], [""]] -> Map.drop(params, [:tags])
+        %{tags: _tags} = params -> Map.update!(params, :tags, &Enum.join(&1, ","))
+        params -> params
+      end)
+    end
   end
 
   def mount(socket) do
@@ -35,8 +52,8 @@ defmodule RemindersonWeb.FilterComponent do
   end
 
   def update(assigns, socket) do
-    params = Map.get(assigns, :params, %{})
-    changeset = Form.changeset(params)
+    changeset = Map.fetch!(assigns, :changeset)
+    params = Form.to_params(changeset)
 
     assigns = [
       ask_reminder_screen_name_select: Reminders.ask_reminder_screen_name_list(params),
@@ -54,12 +71,7 @@ defmodule RemindersonWeb.FilterComponent do
     params =
       params
       |> Form.changeset()
-      |> Map.get(:changes)
-      |> then(fn
-        %{tags: [""]} = params -> Map.drop(params, [:tags])
-        %{tags: _tags} = params -> Map.update!(params, :tags, &Enum.join(&1, ","))
-        params -> params
-      end)
+      |> Form.to_changes()
 
     {:noreply, push_redirect(socket, to: socket.assigns.redirect_to.(params))}
   end

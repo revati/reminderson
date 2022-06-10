@@ -1,6 +1,6 @@
 <.live_component module={RemindersonWeb.FilterComponent} 
   id="filter" 
-  params={@params} 
+  changeset={@changeset}
   redirect_to={&Routes.reminder_index_path(@socket, :index, &1)}
 />
 

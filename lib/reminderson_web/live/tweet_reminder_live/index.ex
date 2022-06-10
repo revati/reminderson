@@ -14,19 +14,17 @@ defmodule RemindersonWeb.ReminderLive.Index do
   end
 
   defp apply_action(socket, :index, params) do
-    params =
-      params
-      |> RemindersonWeb.FilterComponent.Form.changeset()
-      |> Ecto.Changeset.apply_changes()
-      |> Map.from_struct()
+    changeset = RemindersonWeb.FilterComponent.Form.changeset(params)
 
     socket
     |> assign(:page_title, "Listing Tweet reminders")
-    |> assign(:params, params)
-    |> assign(:tweet_reminders, list_tweet_reminders(params))
+    |> assign(:changeset, changeset)
+    |> assign(:tweet_reminders, list_tweet_reminders(changeset))
   end
 
-  defp list_tweet_reminders(params) do
-    Reminders.list_tweet_reminders(params)
+  defp list_tweet_reminders(changeset) do
+    changeset
+    |> RemindersonWeb.FilterComponent.Form.to_params()
+    |> Reminders.list_tweet_reminders()
   end
 end
