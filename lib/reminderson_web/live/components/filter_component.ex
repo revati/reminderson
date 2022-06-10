@@ -13,15 +13,7 @@ defmodule RemindersonWeb.FilterComponent do
     end
 
     def changeset(%__MODULE__{} = schema \\ %__MODULE__{}, params) do
-      tags_key = if EnumHelpers.key_type(params) === :atom, do: :tags, else: "tags"
-
-      params =
-        Map.update(params, tags_key, [], fn
-          tag when is_binary(tag) -> String.split(tag, ",")
-          tags when is_list(tags) -> tags
-        end)
-
-      Infrastructure.Mex.Validator.validate(schema, params, [])
+      Infrastructure.Mex.Validator.validate(schema, normalize_from_url(params), [])
     end
 
     def to_params(%Changeset{} = changeset) do
@@ -36,12 +28,26 @@ defmodule RemindersonWeb.FilterComponent do
     end
 
     defp remove_empty(payload) do
-      payload
-      |> Enum.filter(fn
+      Enum.filter(payload, fn
         {_key, value} when value in [nil, "", [], [""]] -> false
         _ -> true
       end)
-      |> Enum.into(%{})
+    end
+
+    def normalize_from_url(payload) do
+      tags_key = if EnumHelpers.key_type(payload) === :atom, do: :tags, else: "tags"
+
+      Map.update(payload, tags_key, [], fn
+        tag when is_binary(tag) -> String.split(tag, ",")
+        tags when is_list(tags) -> tags
+      end)
+    end
+
+    def normalize_to_url(payload) do
+      Enum.into(payload, %{}, fn
+        {:tags, value} -> {:tags, Enum.join(value, ",")}
+        {key, value} -> {key, value}
+      end)
     end
   end
 
@@ -76,6 +82,7 @@ defmodule RemindersonWeb.FilterComponent do
       params
       |> Form.changeset()
       |> Form.to_changes()
+      |> Form.normalize_to_url()
 
     {:noreply, push_redirect(socket, to: socket.assigns.redirect_to.(params))}
   end
