@@ -83,6 +83,34 @@ defmodule Infrastructure.Twitter.Api do
       {:error, error}
   end
 
+  def like_a_tweet(tweet_id) do
+    if should_send_twets?() do
+      ExTwitter.create_favorite(tweet_id, [])
+      |> then(&{:ok, normalize(&1)})
+    else
+      [id: tweet_id]
+      |> generate_fake_tweet()
+      |> then(&{:ok, normalize(&1)})
+    end
+  rescue
+    e in ExTwitter.Error ->
+      {:error, %{type: :error, code: e.code, message: e.message}}
+
+    e in ExTwitter.ConnectionError ->
+      {:error, %{type: :connection, reason: e.reason, message: e.message}}
+
+    e in ExTwitter.RateLimitExceededError ->
+      error = %{
+        type: :limit,
+        code: e.code,
+        message: e.message,
+        reset_in: e.reset_in,
+        reset_at: e.reset_at
+      }
+
+      {:error, error}
+  end
+
   defp is_error?(%ExTwitter.Model.Tweet{}), do: false
 
   defp is_error?(%ExTwitter.Model.DeletedTweet{} = deleted_tweet) do
@@ -138,11 +166,11 @@ defmodule Infrastructure.Twitter.Api do
   end
 
   defp generate_fake_tweet(opts) do
-    id = :rand.uniform(8_999_999_999_999_999_999) + 1_000_000_000_000_000_00
+    id = opts[:id] || :rand.uniform(8_999_999_999_999_999_999) + 1_000_000_000_000_000_00
 
     %ExTwitter.Model.Tweet{
       id: id,
-      text: opts[:text],
+      text: opts[:text] || "whatever",
       user: %{screen_name: "test"},
       in_reply_to_status_id: opts[:respond_to],
       in_reply_to_screen_name: "another",

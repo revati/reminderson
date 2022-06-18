@@ -1,5 +1,6 @@
 defmodule Reminder.Aggregate do
   alias Reminder.Helpers
+  alias Infrastructure.Twitter
 
   defstruct [
     :id,
@@ -11,11 +12,12 @@ defmodule Reminder.Aggregate do
     :reason_id,
     :reason_screen_name,
     :acknowledgement_id,
-    :reminder_id
+    :reminder_id,
+    :acknowledged?
   ]
 
   def execute(%__MODULE__{id: nil}, %Reminder.RecordTweet{} = command) do
-    {:ok, datetime, text, tags} = Infrastructure.Twitter.parse(command.text, command.created_at)
+    {:ok, datetime, text, tags} = Twitter.parse(command.text, command.created_at)
 
     command
     |> Map.from_struct()
@@ -40,7 +42,7 @@ defmodule Reminder.Aggregate do
         :ok
 
       %{id: id, reason_id: reason_id} ->
-        case Infrastructure.Twitter.get_text_by_id(reason_id) do
+        case Twitter.get_text_by_id(reason_id) do
           {:ok, text} -> %Reminder.ReasonTextFetched{id: id, reason_text: text}
           {:error, reason} -> {:error, reason}
         end
@@ -52,11 +54,9 @@ defmodule Reminder.Aggregate do
   end
 
   def execute(%__MODULE__{} = a, %Reminder.AcknowledgeTweet{}) do
-    with {:ack, nil} <- {:ack, a.acknowledgement_id},
-         text <- Helpers.prepare_acknowledgement_text(a),
-         {:ok, tweet} <-
-           Infrastructure.Twitter.respond_to_tweet(a.ask_reminder_id, text, quote: a.reason_id) do
-      %Reminder.TweetAcknowledged{id: a.id, acknowledgement_id: tweet.tweet_id}
+    with {:ack, nil} <- {:ack, a.acknowledged?},
+         {:ok, %{tweet_id: id}} <- Twitter.like_a_tweet(a.ask_reminder_id) do
+      %Reminder.TweetAcknowledged{id: a.id, acknowledgement_id: id, type: :like}
     else
       {:ack, _} -> :ok
       {:error, reason} -> {:error, reason}
@@ -68,12 +68,10 @@ defmodule Reminder.Aggregate do
   end
 
   def execute(%__MODULE__{} = a, %Reminder.RemindAboutTweet{}) do
-    with {:ack, ack} when not is_nil(ack) <- {:ack, a.acknowledgement_id},
-         {:rem, nil} <- {:rem, a.reminder_id},
+    with {:rem, nil} <- {:rem, a.reminder_id},
          {:rem_time, rem} when not is_nil(rem) <- {:rem_time, a.remind_at},
          text <- Helpers.prepare_reminder_text(a),
-         {:ok, tweet} <-
-           Infrastructure.Twitter.respond_to_tweet(a.acknowledgement_id, text, quote: a.reason_id) do
+         {:ok, tweet} <- Twitter.respond_to_tweet(a.ask_reminder_id, text, quote: a.reason_id) do
       %Reminder.RemindedAboutTweet{id: a.id, reminder_id: tweet.tweet_id}
     else
       {:rem, _} -> :ok
@@ -102,7 +100,7 @@ defmodule Reminder.Aggregate do
   end
 
   def apply(%__MODULE__{} = aggregate, %Reminder.TweetAcknowledged{} = event) do
-    %{aggregate | acknowledgement_id: event.acknowledgement_id}
+    %{aggregate | acknowledged?: true, acknowledgement_id: event.acknowledgement_id}
   end
 
   def apply(%__MODULE__{} = aggregate, %Reminder.RemindedAboutTweet{} = event) do

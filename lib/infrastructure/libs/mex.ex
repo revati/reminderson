@@ -4,6 +4,25 @@ defmodule Infrastructure.Mex do
     deps: [Infrastructure.Mutex, Infrastructure.Repo],
     exports: [Validator]
 
+  @field_opts [
+    :default,
+    :source,
+    :autogenerate,
+    :read_after_writes,
+    :virtual,
+    :primary_key,
+    :load_in_query,
+    :redact,
+    :foreign_key,
+    :on_replace,
+    :defaults,
+    :type,
+    :where,
+    :references,
+    :skip_default_validation,
+    :values
+  ]
+
   defmacro __using__(_) do
     quote do
       use Ecto.Schema
@@ -48,7 +67,7 @@ defmodule Infrastructure.Mex do
   defmacro mex_field(name, type \\ :string, opts \\ []) do
     quote do
       unquote(save_metadata(name, [type: type] ++ opts))
-      field unquote(name), unquote(type), unquote(opts)
+      field unquote(name), unquote(type), unquote(Keyword.take(opts, @field_opts))
     end
   end
 
