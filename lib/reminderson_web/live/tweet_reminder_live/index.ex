@@ -5,6 +5,11 @@ defmodule RemindersonWeb.ReminderLive.Index do
 
   @impl true
   def mount(_params, _session, socket) do
+    1_537_478_063_054_852_096
+    |> ExTwitter.show()
+    |> Infrastructure.Twitter.Api.normalize()
+    |> Reminder.Helpers.normalize_reason_params()
+
     {:ok, assign(socket, :tweet_reminders, [])}
   end
 

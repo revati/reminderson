@@ -4,6 +4,96 @@
   redirect_to={&Routes.reminder_index_path(@socket, :index, &1)}
 />
 
+
+<br># Buttons
+<.button>Primary</.button>
+<.button primary>Primary</.button>
+<.button secondary>Secondary</.button>
+<.button success>Success</.button>
+<.button danger>Danger</.button>
+<.button warning>Warning</.button>
+<.button info>Info</.button>
+<.button light>Light</.button>
+<.button dark>Dark</.button>
+<.button link>Link</.button>
+
+<br># link
+<.link>External</.link>
+<.link/>
+
+<br># Outline
+<.button primary outline>Primary</.button>
+<.button secondary outline>Secondary</.button>
+<.button success outline>Success</.button>
+<.button danger outline>Danger</.button>
+<.button warning outline>Warning</.button>
+<.button info outline>Info</.button>
+<.button light outline>Light</.button>
+<.button dark outline>Dark</.button>
+
+<br># Sizes
+<.button primary sm>Link</.button>
+<.button primary lg>Link</.button>
+
+<br># Disabled/Active
+<.button primary disabled>Link</.button>
+<.button primary active>Link</.button>
+
+<br># Submit
+<.submit>Primary</.submit>
+
+<br>#Close
+<.close />
+<.close disabled />
+<.close sm />
+<.close lg />
+
+<br># Group
+<.button_group lg>
+  <.button danger outline>Danger</.button>
+  <.button warning outline>Warning</.button>
+  <.button info outline>Info</.button>
+</.button_group>
+
+<.button_group vertical>
+  <.button danger outline>Danger</.button>
+  <.button warning outline>Warning</.button>
+  <.button info outline>Info</.button>
+</.button_group>
+
+<br> # group
+  <.button_toolbar>
+  <:group let={extra}>
+    <.button_group {extra}>
+      <.button primary>1</.button>
+      <.button primary>2</.button>
+      <.button primary>3</.button>
+      <.button primary>4</.button>
+    </.button_group>
+  </:group>
+  <:group let={extra}>
+    <.button_group {extra}>
+      <.button secondary>5</.button>
+      <.button secondary>6</.button>
+      <.button secondary>7</.button>
+    </.button_group>
+  </:group>
+  <:group let={extra}>
+    <.button_group {extra}>
+      <.button info>8</.button>
+    </.button_group>
+  </:group>
+</.button_toolbar>
+
+# Button actions
+
+<.button to={}>Link</.button>
+<.button click="some">Click</.button>
+
+<%= live_redirect "redirect", to: Routes.reminder_index_path(@socket, :index) %>
+<%= live_patch "patch", to: Routes.reminder_index_path(@socket, :index) %>
+<%= link "delete", to: Routes.reminder_index_path(@socket, :index), method: :delete %>
+
 <table>
   <thead>
     <tr>

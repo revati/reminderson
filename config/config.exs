@@ -14,12 +14,17 @@ config :reminderson,
 
 config :reminderson, Components,
   components: [
-    alert: Components.Bootstrap.Alert
+    # alert: Components.Bootstrap.Alert,
     # accordion: HelloWorldWeb.Bootstrap,
     # badge: HelloWorldWeb.Bootstrap,
-    # button: Components.Bootstrap.Button,
-    # button_group: {Components.Bootstrap.Button, :group},
-    # button_toolbar: {Components.Bootstrap.Button, :toolbar},
+    link: Components.Bootstrap.Link,
+    button: {Components.Bootstrap.Button, :button, %{type: :button, class: ["btn text-nowrap"]}},
+    submit: {Components.Bootstrap.Button, :button, %{type: :submit, class: ["btn text-nowrap"]}},
+    close:
+      {Components.Bootstrap.Button, %{class: ["btn-close"], type: "button", aria_label: "Close"}},
+    button_group: {Components.Bootstrap.Button, :group, %{role: :group}},
+    button_toolbar:
+      {Components.Bootstrap.Button, :toolbar, %{role: :toolbar, class: ["btn-toolbar"]}}
     # dropdown: Components.Bootstrap.Dropdown,
     # dropdown_toggle: {Components.Bootstrap.Dropdown, :toggle},
     # dropdown_menu: {Components.Bootstrap.Dropdown, :menu}

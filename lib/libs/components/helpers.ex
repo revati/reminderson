@@ -1,7 +1,41 @@
 defmodule Components.Helpers do
-  @types [:primary, :secondary, :success, :danger, :warning, :info, :light, :dark]
-
   use Phoenix.Component
+
+  @types [:primary, :secondary, :success, :danger, :warning, :info, :light, :dark, :link]
+  def types, do: @types
+
+  def to_attributes(type, assigns, defaults \\ %{}, directives) do
+    defaults = assigns |> Map.get(:__defaults__, %{}) |> Map.merge(defaults)
+
+    directives
+    |> Enum.reduce(defaults, fn directive, acc ->
+      {directive, opts} =
+        case directive do
+          {directive, opts} -> {directive, Enum.into(opts, %{})}
+          directive -> {directive, %{}}
+        end
+
+      type
+      |> directive.(assigns, opts)
+      |> List.wrap()
+      |> Enum.reduce(acc, &handle_reducer_response/2)
+    end)
+  end
+
+  def atributes_reducer(assigns, defaults, reducer) do
+    Enum.reduce(assigns, defaults, fn {key, value}, a ->
+      assigns
+      |> reducer.(key, value)
+      |> List.wrap()
+      |> Enum.reduce(a, &handle_reducer_response/2)
+    end)
+  end
+
+  defp handle_reducer_response({:append, name, value}, a),
+    do: Map.update(a, name, [value], &[value | &1])
+
+  defp handle_reducer_response({:put, name, value}, a), do: Map.put(a, name, value)
+  defp handle_reducer_response(:ignore, a), do: a
 
   def assign_type(assigns, default_type \\ hd(@types)) do
     assigns

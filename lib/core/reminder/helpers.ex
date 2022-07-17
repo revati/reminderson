@@ -22,14 +22,20 @@ defmodule Reminder.Helpers do
     "https://twitter.com/#{aggregate.reason_screen_name}/status/#{Integer.to_string(aggregate.reason_id)}"
   end
 
-  def normalize_reason_params(%{reason_id: nil} = params) do
+  def normalize_reason_params(params) do
+    {reason_id, reason_screen_name, reason_text} = extract_reason_params(params)
+
     params
-    |> Map.put(:reason_id, params.ask_reminder_id)
-    |> Map.put(:reason_screen_name, params.ask_reminder_screen_name)
-    |> Map.put(:reason_text, params.text)
+    |> Map.put(:reason_id, reason_id)
+    |> Map.put(:reason_screen_name, reason_screen_name)
+    |> Map.put(:reason_text, reason_text)
   end
 
-  def normalize_reason_params(params) do
-    params
+  defp extract_reason_params(params) do
+    cond do
+      params.respond_to_id -> {params.respond_to_id, params.respond_to_screen_name, nil}
+      params.quote_id -> {params.quote_id, params.quote_screen_name, nil}
+      true -> {params.ask_reminder_id, params.ask_reminder_screen_name, params.text}
+    end
   end
 end

@@ -141,14 +141,25 @@ defmodule Infrastructure.Twitter.Api do
       String.downcase(raw_tweet.in_reply_to_screen_name) == account_to_follow
   end
 
-  defp normalize(%ExTwitter.Model.Tweet{} = tweet) do
+  def normalize(%ExTwitter.Model.Tweet{} = tweet) do
+    tweet
+    |> Map.get(:entities)
+    |> Map.get(:raw_data)
+    # |> Map.get(:user_mentions)
+    # |> Enum.map(&Map.get(&1, :screen_name))
+    |> IO.inspect()
+
+    IO.inspect(tweet.text)
+
     %{
       tweet_id: tweet.id,
       text: tweet.text,
       ask_reminder_id: tweet.id,
       ask_reminder_screen_name: tweet.user.screen_name,
-      reason_id: tweet.in_reply_to_status_id,
-      reason_screen_name: tweet.in_reply_to_status_id && tweet.in_reply_to_screen_name,
+      quote_id: tweet.quoted_status && tweet.quoted_status_id,
+      quote_screen_name: tweet.quoted_status && tweet.quoted_status.user.screen_name,
+      respond_to_id: tweet.in_reply_to_status_id,
+      respond_to_screen_name: tweet.in_reply_to_status_id && tweet.in_reply_to_screen_name,
       created_at: Timex.parse!(tweet.created_at, "%a %b %d %H:%M:%S %z %Y", :strftime)
     }
   end
