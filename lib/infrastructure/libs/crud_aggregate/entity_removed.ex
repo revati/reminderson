@@ -3,6 +3,6 @@ defmodule CRUD.EntityRemoved do
 
   @derive Jason.Encoder
   mex_embedded_schema do
-    mex_field :entity_id, Infrastructure.UUID
+    mex_field(:entity_id, Infrastructure.UUID)
   end
 end

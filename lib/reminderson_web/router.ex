@@ -21,6 +21,7 @@ defmodule RemindersonWeb.Router do
     # get "/", PageController, :index
     live "/", ReminderLive.Index, :index
     live "/tweet_reminder/:id", ReminderLive.Show, :show
+    live "/test", ReminderLive.Test, :test
 
     # live "/tweet_reminders", ReminderLive.Index, :index
     # live "/tweet_reminders/new", ReminderLive.Index, :new

@@ -3,9 +3,28 @@
   changeset={@changeset}
   redirect_to={&Routes.reminder_index_path(@socket, :index, &1)}
 />
+<Components.Bootstrap.ButtonNew.button disabled size="sm">Disabled</Components.Bootstrap.ButtonNew.button>
 
+<%# <.button>Test</.button>
+<.button primary>Test</.button>
+<.button primary lg>Test</.button>
+<.button primary sm>Test</.button>
+<.button primary disabled>Test</.button>
+<.button primary wut phx-click={JS.dispatch("alter")}>WUT</.button>
+<.button primary wut ={JS.dispatch("alter")}>WUT</.button>
+<.button primary wut phx-click={JS.dispatch("alter")}>WUT</.button>
 
-<br># Buttons
+<Components.Bootstrap.ButtonNew.button phx-click={JS.dispatch("alter")}>Click</Components.Bootstrap.ButtonNew.button>
+<Components.Bootstrap.ButtonNew.button primary info navigate={Routes.reminder_index_path(@socket, :index, %{navigate: true})}>navigate</Components.Bootstrap.ButtonNew.button>
+<Components.Bootstrap.ButtonNew.button primary info patch={Routes.reminder_index_path(@socket, :index, %{patch: true})}>patch</Components.Bootstrap.ButtonNew.button>
+<Components.Bootstrap.ButtonNew.button primary info href={Routes.reminder_index_path(@socket, :index, %{href: true})}>href</Components.Bootstrap.ButtonNew.button>
+<Components.Bootstrap.ButtonNew.dropdown primary info href={Routes.reminder_index_path(@socket, :index, %{href: true})}>dropdown</Components.Bootstrap.ButtonNew.dropdown> %>
+<%# 
+<Components.Bootstrap.ButtonNew.button primary info lg sm>Someeee</Components.Bootstrap.ButtonNew.button>
+<Components.Bootstrap.ButtonNew.button primary sm>Someeee</Components.Bootstrap.ButtonNew.button>
+<Components.Bootstrap.ButtonNew.button primary sm disabled>Someeee</Components.Bootstrap.ButtonNew.button>
+<Components.Bootstrap.ButtonNew.button outline primary sm disabled>Someeee</Components.Bootstrap.ButtonNew.button> %>
+<%# <br># Buttons
 <.button>Primary</.button>
 <.button primary>Primary</.button>
 <.button secondary>Secondary</.button>
@@ -87,44 +106,38 @@
 
 # Button actions
 
-<.button to={}>Link</.button>
-<.button click="some">Click</.button>
+<.button to={}>Link</.button> %>
+<%# <.button click="some">Click</.button> %>
+<%# <.button primary click="some">Click</.button> %>
 
-<%= live_redirect "redirect", to: Routes.reminder_index_path(@socket, :index) %>
-<%= live_patch "patch", to: Routes.reminder_index_path(@socket, :index) %>
-<%= link "delete", to: Routes.reminder_index_path(@socket, :index), method: :delete %>
+<%# <.link navigate="//some.com">What</.link> %>
+<%# <.link navigate="//some.com">What</.link> %>
+<%# <%= live_redirect "redirect", to: Routes.reminder_index_path(@socket, :index) %> 
+<%# <%= live_patch "patch", to: Routes.reminder_index_path(@socket, :index) %> 
+<%# <%= link "delete", to: Routes.reminder_index_path(@socket, :index), method: :delete %>
 
-<table>
-  <thead>
-    <tr>
-      <th>Asked by</th>
-      <th>Asked about</th>
-      <th>Reason</th>
-      <th>Remind at</th>
-      <th>Tags</th>
-      <th>Ack/Remind</th>
-
-      <th></th>
-    </tr>
-  </thead>
-  <tbody id="tweet_reminders">
-    <%= for reminder <- @tweet_reminders do %>
-      <tr id={"reminder-#{reminder.id}"}>
-        <td><%= reminder.ask_reminder_screen_name %></td>
-        <td><%= reminder.reason_screen_name %></td>
-        <td><%= reminder.reason_text %></td>
-        <td><%= reminder.remind_at %></td>
-        <td><%= Enum.map(reminder.tags, &"##{&1.tag}") %></td>
-        <td>
-        	<span title="Acknowledgement" class={if reminder.acknowledgement_id, do: "text-success", else: "text-idle"}>&#x2713;</span>
-           /
-        	<span title="Reminder" class={if reminder.reminder_id, do: "text-success", else: "text-idle"}>&#x2713;</span>
-        </td>
-
-        <td>
-          <span><%= live_redirect "Show", to: Routes.reminder_show_path(@socket, :show, reminder) %></span>
-       </td>
-      </tr>
-    <% end %>
-  </tbody>
-</table>
+<Components.Bootstrap.ButtonNew.table rows={@tweet_reminders}>
+  <:col let={reminder} label="Asked by">
+    <%= reminder.ask_reminder_screen_name %>
+  </:col>
+  <:col let={reminder} label="Asked about">
+    <%= reminder.reason_screen_name %>
+  </:col>  
+  <:col let={reminder} label="Reason">
+    <%= reminder.reason_text %>
+  </:col>
+  <:col let={reminder} label="Remind at">
+    <%= reminder.remind_at %>
+  </:col>
+  <:col let={reminder} label="Tags">
+    <%= Enum.map(reminder.tags, &"##{&1.tag}") %>
+  </:col>
+  <:col let={reminder} label="Ack/Remind">
+    <span title="Acknowledgement" class={if reminder.acknowledgement_id, do: "text-success", else: "text-idle"}>&#x2713;</span>
+      /
+    <span title="Reminder" class={if reminder.reminder_id, do: "text-success", else: "text-idle"}>&#x2713;</span>
+  </:col>
+  <:col let={reminder} label="">
+    <span><%= live_redirect "Show", to: Routes.reminder_show_path(@socket, :show, reminder) %></span>
+  </:col>
+</Components.Bootstrap.ButtonNew.table>

@@ -1,6 +1,8 @@
 defmodule Components do
   use Boundary, deps: [], exports: []
 
+  defdelegate button(assigns), to: Components.Bootstrap.Button
+
   :reminderson
   |> Application.compile_env!([__MODULE__, :components])
   |> Enum.each(fn {name, element_config} ->

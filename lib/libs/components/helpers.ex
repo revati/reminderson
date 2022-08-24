@@ -31,11 +31,11 @@ defmodule Components.Helpers do
     end)
   end
 
-  defp handle_reducer_response({:append, name, value}, a),
+  def handle_reducer_response({:append, name, value}, a),
     do: Map.update(a, name, [value], &[value | &1])
 
-  defp handle_reducer_response({:put, name, value}, a), do: Map.put(a, name, value)
-  defp handle_reducer_response(:ignore, a), do: a
+  def handle_reducer_response({:put, name, value}, a), do: Map.put(a, name, value)
+  def handle_reducer_response(:ignore, a), do: a
 
   def assign_type(assigns, default_type \\ hd(@types)) do
     assigns

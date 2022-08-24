@@ -4,9 +4,9 @@ defmodule CRUD.Aggregate do
   alias CRUD.{EntityRemoved, EntityUpdated, RemoveEntity, UpdateEntity}
 
   mex_embedded_schema do
-    mex_field :entity_id, Infrastructure.UUID
-    mex_field :contents, :map, default: %{}
-    mex_field :type, Infrastructure.Atom
+    mex_field(:entity_id, Infrastructure.UUID)
+    mex_field(:contents, :map, default: %{})
+    mex_field(:type, Infrastructure.Atom)
   end
 
   def execute(%__MODULE__{entity_id: entity_id}, %RemoveEntity{entity_id: entity_id}) do

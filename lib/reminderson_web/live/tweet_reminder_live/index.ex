@@ -1,6 +1,7 @@
 defmodule RemindersonWeb.ReminderLive.Index do
   use RemindersonWeb, :live_view
 
+  alias Phoenix.LiveView.JS
   alias Reminderson.Reminders
 
   @impl true

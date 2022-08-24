@@ -24,7 +24,7 @@ defmodule Components.Directives do
   end
 
   def click_directive(_element_type, raw, _opts) do
-    IO.inspect(raw)
+    # IO.inspect(raw)
     click = Map.get(raw, :click, false)
 
     {:put, :phx_click, click}

@@ -17,7 +17,7 @@ defmodule Components.Bootstrap.Link do
   end
 
   defp to_attributes(:link, assigns) do
-    IO.inspect(assigns)
+    # IO.inspect(assigns)
     %{}
   end
 end

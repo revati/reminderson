@@ -142,14 +142,15 @@ defmodule Infrastructure.Twitter.Api do
   end
 
   def normalize(%ExTwitter.Model.Tweet{} = tweet) do
-    tweet
-    |> Map.get(:entities)
-    |> Map.get(:raw_data)
+    # tweet
+    # |> Map.get(:entities)
+    # |> Map.get(:raw_data)
+
     # |> Map.get(:user_mentions)
     # |> Enum.map(&Map.get(&1, :screen_name))
-    |> IO.inspect()
+    # |> IO.inspect()
 
-    IO.inspect(tweet.text)
+    # IO.inspect(tweet.text)
 
     %{
       tweet_id: tweet.id,

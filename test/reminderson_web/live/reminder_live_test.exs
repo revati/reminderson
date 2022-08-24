@@ -4,9 +4,45 @@ defmodule RemindersonWeb.ReminderLiveTest do
   import Phoenix.LiveViewTest
   import Reminderson.RemindersFixtures
 
-  @create_attrs %{acknowledgement_id: 42, ask_reminder_id: 42, ask_reminder_screen_name: "some ask_reminder_screen_name", parsed_text: "some parsed_text", reason_id: 42, reason_screen_name: "some reason_screen_name", reason_text: "some reason_text", remind_at: %{day: 17, hour: 20, minute: 11, month: 5, year: 2022}, reminder_id: 42, tags: [], text: "some text"}
-  @update_attrs %{acknowledgement_id: 43, ask_reminder_id: 43, ask_reminder_screen_name: "some updated ask_reminder_screen_name", parsed_text: "some updated parsed_text", reason_id: 43, reason_screen_name: "some updated reason_screen_name", reason_text: "some updated reason_text", remind_at: %{day: 18, hour: 20, minute: 11, month: 5, year: 2022}, reminder_id: 43, tags: [], text: "some updated text"}
-  @invalid_attrs %{acknowledgement_id: nil, ask_reminder_id: nil, ask_reminder_screen_name: nil, parsed_text: nil, reason_id: nil, reason_screen_name: nil, reason_text: nil, remind_at: %{day: 30, hour: 20, minute: 11, month: 2, year: 2022}, reminder_id: nil, tags: [], text: nil}
+  @create_attrs %{
+    acknowledgement_id: 42,
+    ask_reminder_id: 42,
+    ask_reminder_screen_name: "some ask_reminder_screen_name",
+    parsed_text: "some parsed_text",
+    reason_id: 42,
+    reason_screen_name: "some reason_screen_name",
+    reason_text: "some reason_text",
+    remind_at: %{day: 17, hour: 20, minute: 11, month: 5, year: 2022},
+    reminder_id: 42,
+    tags: [],
+    text: "some text"
+  }
+  @update_attrs %{
+    acknowledgement_id: 43,
+    ask_reminder_id: 43,
+    ask_reminder_screen_name: "some updated ask_reminder_screen_name",
+    parsed_text: "some updated parsed_text",
+    reason_id: 43,
+    reason_screen_name: "some updated reason_screen_name",
+    reason_text: "some updated reason_text",
+    remind_at: %{day: 18, hour: 20, minute: 11, month: 5, year: 2022},
+    reminder_id: 43,
+    tags: [],
+    text: "some updated text"
+  }
+  @invalid_attrs %{
+    acknowledgement_id: nil,
+    ask_reminder_id: nil,
+    ask_reminder_screen_name: nil,
+    parsed_text: nil,
+    reason_id: nil,
+    reason_screen_name: nil,
+    reason_text: nil,
+    remind_at: %{day: 30, hour: 20, minute: 11, month: 2, year: 2022},
+    reminder_id: nil,
+    tags: [],
+    text: nil
+  }
 
   defp create_reminder(_) do
     reminder = reminder_fixture()

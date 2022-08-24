@@ -116,7 +116,19 @@ defmodule Reminderson.RemindersTest do
 
     import Reminderson.RemindersFixtures
 
-    @invalid_attrs %{acknowledgement_id: nil, ask_reminder_id: nil, ask_reminder_screen_name: nil, parsed_text: nil, reason_id: nil, reason_screen_name: nil, reason_text: nil, remind_at: nil, reminder_id: nil, tags: nil, text: nil}
+    @invalid_attrs %{
+      acknowledgement_id: nil,
+      ask_reminder_id: nil,
+      ask_reminder_screen_name: nil,
+      parsed_text: nil,
+      reason_id: nil,
+      reason_screen_name: nil,
+      reason_text: nil,
+      remind_at: nil,
+      reminder_id: nil,
+      tags: nil,
+      text: nil
+    }
 
     test "list_tweet_reminders/0 returns all tweet_reminders" do
       reminder = reminder_fixture()
@@ -129,7 +141,19 @@ defmodule Reminderson.RemindersTest do
     end
 
     test "create_reminder/1 with valid data creates a reminder" do
-      valid_attrs = %{acknowledgement_id: 42, ask_reminder_id: 42, ask_reminder_screen_name: "some ask_reminder_screen_name", parsed_text: "some parsed_text", reason_id: 42, reason_screen_name: "some reason_screen_name", reason_text: "some reason_text", remind_at: ~U[2022-05-17 20:11:00Z], reminder_id: 42, tags: [], text: "some text"}
+      valid_attrs = %{
+        acknowledgement_id: 42,
+        ask_reminder_id: 42,
+        ask_reminder_screen_name: "some ask_reminder_screen_name",
+        parsed_text: "some parsed_text",
+        reason_id: 42,
+        reason_screen_name: "some reason_screen_name",
+        reason_text: "some reason_text",
+        remind_at: ~U[2022-05-17 20:11:00Z],
+        reminder_id: 42,
+        tags: [],
+        text: "some text"
+      }
 
       assert {:ok, %Reminder{} = reminder} = Reminders.create_reminder(valid_attrs)
       assert reminder.acknowledgement_id == 42
@@ -151,7 +175,20 @@ defmodule Reminderson.RemindersTest do
 
     test "update_reminder/2 with valid data updates the reminder" do
       reminder = reminder_fixture()
-      update_attrs = %{acknowledgement_id: 43, ask_reminder_id: 43, ask_reminder_screen_name: "some updated ask_reminder_screen_name", parsed_text: "some updated parsed_text", reason_id: 43, reason_screen_name: "some updated reason_screen_name", reason_text: "some updated reason_text", remind_at: ~U[2022-05-18 20:11:00Z], reminder_id: 43, tags: [], text: "some updated text"}
+
+      update_attrs = %{
+        acknowledgement_id: 43,
+        ask_reminder_id: 43,
+        ask_reminder_screen_name: "some updated ask_reminder_screen_name",
+        parsed_text: "some updated parsed_text",
+        reason_id: 43,
+        reason_screen_name: "some updated reason_screen_name",
+        reason_text: "some updated reason_text",
+        remind_at: ~U[2022-05-18 20:11:00Z],
+        reminder_id: 43,
+        tags: [],
+        text: "some updated text"
+      }
 
       assert {:ok, %Reminder{} = reminder} = Reminders.update_reminder(reminder, update_attrs)
       assert reminder.acknowledgement_id == 43
