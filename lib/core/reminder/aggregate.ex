@@ -42,7 +42,7 @@ defmodule Reminder.Aggregate do
         :ok
 
       %{id: id, reason_id: reason_id} ->
-        case Twitter.get_text_by_id(reason_id) do
+        case Twitter.fetch_text_by_id(reason_id) do
           {:ok, text} -> %Reminder.ReasonTextFetched{id: id, reason_text: text}
           {:error, reason} -> {:error, reason}
         end

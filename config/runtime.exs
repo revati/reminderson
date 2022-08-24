@@ -12,14 +12,17 @@ if System.get_env("PHX_SERVER") && System.get_env("RELEASE_NAME") do
   config :reminderson, RemindersonWeb.Endpoint, server: true
 end
 
+true_values = ["1", 1, "true", true]
+
 config :extwitter, :oauth,
   consumer_key: System.fetch_env!("TWITTER_CONSUMER_KEY"),
   consumer_secret: System.fetch_env!("TWITTER_CONSUMER_SECRET"),
   access_token: System.fetch_env!("TWITTER_ACCESS_TOKEN"),
   access_token_secret: System.fetch_env!("TWITTER_ACCESS_SECRET"),
   account_name: String.downcase(System.fetch_env!("TWITTER_ACCOUNT_TO_FALLOW")),
-  send_tweets?: System.fetch_env!("TWITTER_SEND_TWEETS") in ["1", 1, "true"],
-  fetch_past_mentions?: System.fetch_env!("TWITTER_FETCH_PAST_MENTIONS") in ["1", 1, "true"]
+  connect?: System.fetch_env!("TWITTER_CONNECT") in true_values,
+  fetch_past_mentions?: System.fetch_env!("TWITTER_FETCH_PAST_MENTIONS") in true_values,
+  send_tweets?: System.fetch_env!("TWITTER_SEND_TWEETS") in true_values
 
 config :sentry,
   dsn: System.fetch_env!("SENTRY_DSN"),

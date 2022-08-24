@@ -32,7 +32,7 @@ defmodule Reminder.TwitterSubscriber do
   end
 
   defp subscribe_to_ongoing_mentions() do
-    for tweet <- Infrastructure.Twitter.mentions_stream() do
+    for tweet <- Infrastructure.Twitter.fetch_mentions_stream() do
       handle_raw_tweet(tweet)
     end
 
